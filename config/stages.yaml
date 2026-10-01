@@ -1,0 +1,108 @@
+# =====================================================================================================================
+# stages.yaml — run-time defaults (FROZEN in Phase 1). Every value can be overridden per run (CLI flag / request option)
+# and, for sampling parameters, per provider model (`unsupported_params` in providers.yaml).
+# When a provider ignores a parameter the adapter drops it and logs PARAM_UNSUPPORTED to the run log.
+# =====================================================================================================================
+version: 1
+
+stages:
+  # Language detection — LLM FALLBACK ONLY (used when the local detector is below thresholds.detection_confidence_min).
+  language_detection:
+    temperature: 0.0   # Pure classification.
+    top_p: 1.0
+    max_tokens: 2048
+    justification: Pure classification.
+
+  translation:
+    temperature: 0.2   # Fidelity first; slight freedom for natural phrasing.
+    top_p: 0.9
+    max_tokens: 8192
+    justification: Fidelity first; slight freedom for natural phrasing.
+
+  localization:
+    temperature: 0.3   # Idiomatic adaptation needs modest variation; facts stay locked.
+    top_p: 0.9
+    max_tokens: 8192
+    justification: Idiomatic adaptation needs modest variation; facts stay locked.
+
+  validation:          # LLM judge
+    temperature: 0.0   # Scoring must be repeatable across runs and models.
+    top_p: 1.0
+    max_tokens: 8192
+    justification: Scoring must be repeatable across runs and models.
+
+  backtranslation:
+    temperature: 0.0   # Literal mirror for drift detection.
+    top_p: 1.0
+    max_tokens: 8192
+    justification: Literal mirror for drift detection.
+
+  repair:
+    temperature: 0.1   # Targeted fix of flagged spans only.
+    top_p: 0.9
+    max_tokens: 4096
+    justification: Targeted fix of flagged spans only.
+
+batching:
+  max_segments: 12          # lower this when a provider truncates or breaks JSON (spec §8.2)
+  max_input_chars: 6000
+
+concurrency:
+  locales: 3                # target locales processed in parallel
+  calls_per_locale: 2       # concurrent LLM calls inside one locale
+
+thresholds:
+  pass: 90                  # {{PASS_THRESHOLD}}
+  max_repair_loops: 2       # {{MAX_REPAIR_LOOPS}}
+  judge_confidence_min: 0.7 # below -> HUMAN_REVIEW
+  detection_confidence_min: 0.8   # below -> LLM fallback
+  back_translation_similarity_min: 0.4   # raise to catch more meaning drift (over-localisation)
+  detection_min_words: 4    # shorter segments inherit the document language
+
+scoring:
+  weights: { minor: 1, major: 5, critical: 25 }
+  words_floor: 100          # penalty = Σ weights × 100 / max(words, 100): reproduces the golden exemplar (one major -> 95)
+
+cost:
+  ceiling_usd: 5.00         # {{COST_CEILING_USD}} per run; the pipeline halts gracefully and reports when exceeded
+
+ingest:
+  user_agent: 'locale-engine/0.1 (content localization tool)'
+  timeout_ms: 20000
+  max_retries: 3
+  backoff_ms: 500
+  max_bytes: 5000000
+  respect_robots: true
+  block_private_networks: true   # SSRF guard — on by default, see PROPOSED_ADDITIONS.md
+
+page_classification:
+  # Case-insensitive regexes tested against the URL path / file name. A match classifies the page LEGAL:
+  # translation only, every output segment flagged for human review, never localised.
+  legal_url_patterns:
+    - '(?:^|[/_.-])(?:privacy|privacyverklaring|privacybeleid|privacy-policy|privacy-statement|privacy-notice|privacy-e-cookie)(?:[/_.-]|$)'
+    - '(?:^|[/_.-])(?:datenschutz\w*|impressum|agb|rechtliches|rechtliche-hinweise)(?:[/_.-]|$)'
+    - '(?:^|[/_.-])(?:algemene-voorwaarden|voorwaarden|disclaimer|colofon|gebruiksvoorwaarden)(?:[/_.-]|$)'
+    - '(?:^|[/_.-])(?:terms|terms-and-conditions|terms-of-use|terms-of-service|legal|legal-notice|cookie|cookies|cookiebeleid|cookie-policy|gdpr|avg)(?:[/_.-]|$)'
+    - '(?:^|[/_.-])(?:informativa|note-legali|condizioni-generali|condizioni-di-vendita)(?:[/_.-]|$)'
+  # Case-insensitive regexes tested against the page title / first heading.
+  legal_title_patterns:
+    - '\bprivacy(?:verklaring|beleid| policy| statement| notice)?\b'
+    - '\balgemene voorwaarden\b'
+    - '\bterms (?:and|&) conditions\b'
+    - '\bterms of (?:use|service)\b'
+    - '\bimpressum\b'
+    - '\bdatenschutz\w*'
+    - '\bcookie(?:beleid| policy| statement)\b'
+    - '\bdisclaimer\b'
+    - '\binformativa\b'
+
+locale_matrix:
+  # `--targets all` expansion per source language (spec §4.1). en-* -> en-NL / en-GB is "adapt only" (same language, no translation).
+  default_targets:
+    nl: [en-NL, en-GB, de-DE, de-AT, de-CH, it-IT]
+    en: [en-NL, en-GB, de-DE, de-AT, de-CH, it-IT]
+  enable_en_to_nl: false    # en-* -> nl-NL is supported but off by default
+  pivot: direct             # German variants are always produced directly from source, never converted from each other
+
+# Proposed additions (PROPOSED_ADDITIONS.md): every flag is false until approved.
+features: {}

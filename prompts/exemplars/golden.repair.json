@@ -1,0 +1,49 @@
+{
+  "title": "Example — REPAIR stage (de-CH): only the flagged spans are rewritten, everything else stays untouched",
+  "glossary_shown": [],
+  "input": {
+    "stage": "repair",
+    "source_locale": "nl-NL",
+    "target_locale": "de-CH",
+    "segments": [
+      {
+        "segment_id": "p-007",
+        "block_type": "paragraph",
+        "source_text": "Vraag een vrijblijvende offerte aan bij onze <a1>servicedienst</a1>.",
+        "current_text": "Fordern Sie ein unverbindliches Angebot bei unserem <a1>Kundendienst</a1> an.",
+        "spans": [
+          {
+            "span_id": "s1",
+            "start": 12,
+            "end": 39,
+            "text": "ein unverbindliches Angebot",
+            "findings": [
+              {
+                "rule": "DECH-LEX-OFFERTE",
+                "severity": "major",
+                "explanation": "In Swiss B2B German a quotation is an \"Offerte\"; \"Angebot\" reads as German usage. [EVIDENCE: DECH-LEX-OFFERTE]",
+                "suggested_fix": "Use \"Offerte\" and adjust article and adjective endings (ein Angebot → eine Offerte)."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "thinking": "Only span s1 is flagged. Offerte is feminine, so the article and adjective change too: ein unverbindliches Angebot → eine unverbindliche Offerte. The span contains no tags; nothing else may change.",
+  "output": {
+    "results": [
+      {
+        "segment_id": "p-007",
+        "repairs": [
+          {
+            "span_id": "s1",
+            "replacement": "eine unverbindliche Offerte",
+            "rule": "DECH-LEX-OFFERTE",
+            "reason": "[EVIDENCE: DECH-LEX-OFFERTE] Offerte is the Swiss term; article and adjective re-inflected for the feminine noun."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "title": "Example — language classification of short, ambiguous segments (fallback for the local detector)",
+  "glossary_shown": [],
+  "input": {
+    "stage": "language_detection",
+    "candidates": ["nl", "en", "de", "it"],
+    "segments": [
+      { "segment_id": "a-014", "text": "Vraag offerte aan" },
+      { "segment_id": "a-015", "text": "Request a quotation" },
+      { "segment_id": "td-021", "text": "Flygt" }
+    ]
+  },
+  "thinking": "a-014 is Dutch, a-015 is English, td-021 is a brand name and has no language.",
+  "output": {
+    "results": [
+      { "segment_id": "a-014", "lang": "nl", "confidence": 0.97 },
+      { "segment_id": "a-015", "lang": "en", "confidence": 0.98 },
+      { "segment_id": "td-021", "lang": "und", "confidence": 0.9 }
+    ]
+  }
+}

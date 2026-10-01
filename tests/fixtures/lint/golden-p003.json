@@ -1,0 +1,21 @@
+{
+  "_comment": "Golden standard segment of docs/SPEC.md §5.1 (nl-NL -> de-CH, market_facts.yaml has no de-CH.delivery).",
+  "segment_id": "p-003",
+  "block_type": "paragraph",
+  "source_locale": "nl-NL",
+  "source_lang": "nl",
+  "target_locale": "de-CH",
+  "source_text": "Onze centrifugaalpompen leveren een debiet tot 450 m³/h bij een opvoerhoogte van 80 meter. Vraag vandaag nog een vrijblijvende offerte aan — levering binnen 5 werkdagen in heel Nederland.",
+  "translation": "Unsere Kreiselpumpen fördern bis zu 450 m³/h bei einer Förderhöhe von 80 Metern. Fordern Sie noch heute ein unverbindliches Angebot an – Lieferung innerhalb von 5 Werktagen in den gesamten Niederlanden.",
+  "localized_text": "Unsere Kreiselpumpen fördern bis zu 450 m³/h bei einer Förderhöhe von 80 Metern. Fordern Sie noch heute eine unverbindliche Offerte an – Lieferung innert 5 Arbeitstagen.",
+  "changes": [
+    { "from": "ein unverbindliches Angebot", "to": "eine unverbindliche Offerte", "rule": "DECH-LEX-OFFERTE", "reason": "[EVIDENCE: DECH-LEX-OFFERTE] Offerte is the standard Swiss B2B term for a quotation.", "origin": "llm" },
+    { "from": "innerhalb von 5 Werktagen", "to": "innert 5 Arbeitstagen", "rule": "DECH-LEX-INNERT", "reason": "[EVIDENCE: DECH-LEX-INNERT] Swiss preposition; Arbeitstage is the common Swiss usage.", "origin": "llm" },
+    { "from": "in den gesamten Niederlanden", "to": "", "rule": "INTEGRITY-MARKET-CLAIM", "reason": "[EVIDENCE: market_facts.yaml has no de-CH.delivery] Geographic claim neutralized; delivery scope for Switzerland unconfirmed.", "origin": "llm" }
+  ],
+  "expected_pass_checks": [
+    { "rule": "DECH-SZ-01", "result": "PASS", "note": "[EVIDENCE: DECH-SZ-01] No ß present.", "severity": "critical" },
+    { "rule": "INTEGRITY-ENTITY", "result": "PASS", "note": "[EVIDENCE: p-003] 450 m³/h and 80 preserved.", "severity": "critical" }
+  ],
+  "expected_review_reasons": ["INTEGRITY-MARKET-CLAIM: source claims \"in heel Nederland\" and no de-CH delivery fact is supplied"]
+}

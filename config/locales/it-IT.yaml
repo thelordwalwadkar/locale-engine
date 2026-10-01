@@ -1,0 +1,108 @@
+# it-IT — Italian for Italy (FROZEN in Phase 1)
+locale: it-IT
+language: it
+region: IT
+display_name: Italian (Italy)
+audience_label: Italian
+description: >-
+  Italian for industrial and municipal buyers in Italy: formal "Lei", Italian number, currency and date conventions, and
+  established Italian technical terms (preventivo, portata, prevalenza) instead of anglicisms.
+hreflang: it-IT
+
+formatting:
+  number: { decimal: ',', thousands: '.', accepted_thousands: ['.'], dash_decimal: drop, example: '1.234,56' }
+  currency: { local_code: EUR, local_symbol: '€', position: after, space: nbsp, accept_alternate_position: false, example: "1.234,56 €" }
+  date: { numeric: 'DD/MM/YYYY', zero_pad: true, textual_example: '30 settembre 2026' }
+  quotes: { open: '«', close: '»', open_inner: '“', close_inner: '”' }
+
+slug:
+  transliterate: {}
+  strip_diacritics: true
+
+seo:
+  title_max: 60
+  meta_description_max: 155
+
+prompt_notes:
+  - 'Address the reader formally with "Lei" (La contatteremo, Le offriamo, Richieda un preventivo). Never use tu-forms (Richiedi, Contattaci).'
+  - 'Use the established technical terms: preventivo (quote), portata (flow rate), prevalenza (head), girante (impeller), tenuta meccanica (mechanical seal), ricambi (spare parts).'
+  - 'Numbers 1.234,56; currency "1.234,56 €" with a no-break space; dates 30/09/2026 or "30 settembre 2026" (month in lower case).'
+
+rules:
+  - id: ITIT-FORMAL-01
+    type: lexicon
+    terms:
+      - { pattern: '\b(?:tu|ti|tuo|tua|tuoi|tue)\b', note: informal pronoun }
+      - { pattern: '\b(?:contattaci|scrivici|chiamaci|richiedi|scopri|scarica|visita|guarda|prova|acquista|ordina|prenota)\b', note: informal imperative }
+    severity: major
+    message: 'B2B Italian addresses the reader with the formal "Lei"; tu-forms and tu-imperatives (Richiedi, Contattaci) are too informal.'
+    fix: 'Use the Lei form (Richieda, Ci contatti, La contatteremo).'
+    tests:
+      - { target: 'Richiedi un preventivo gratuito.', expect: fail }
+      - { target: 'Richieda un preventivo gratuito.', expect: pass }
+      - { target: 'Se hai domande, contattaci.', expect: fail }
+
+  - id: ITIT-ANGL-01
+    type: lexicon
+    terms:
+      - { pattern: '\bflow\s*rate\b', prefer: portata }
+      - { pattern: '\bhead\b', prefer: prevalenza }
+      - { pattern: '\bquotation\b', prefer: preventivo }
+      - { pattern: '\bdelivery\b', prefer: consegna }
+      - { pattern: '\bspare\s+parts?\b', prefer: ricambi }
+      - { pattern: '\bmaintenance\b', prefer: manutenzione }
+      - { pattern: '\bimpeller\b', prefer: girante }
+      - { pattern: '\bmechanical\s+seal\b', prefer: tenuta meccanica }
+      - { pattern: '\bdowntime\b', prefer: fermo macchina }
+    severity: minor
+    repair_trigger: false
+    message: An established Italian term exists; avoid the English word in Italian copy (portata, prevalenza, preventivo, consegna, ricambi, manutenzione, girante).
+    fix: Use the Italian term.
+    tests:
+      - { target: 'La portata e la head sono elevate.', expect: fail }
+      - { target: 'La portata e la prevalenza sono elevate.', expect: pass }
+      - { target: 'Richieda una quotation gratuita.', expect: fail }
+
+  - id: ITIT-NUM-01
+    type: format
+    aspect: number
+    severity: major
+    message: 'Italian numbers use a full stop for thousands and a comma for decimals: 1.234,56.'
+    fix: Write numbers as 1.234,56.
+    tests:
+      - { target: 'Portata fino a 1.250,5 m³/h.', expect: pass }
+      - { target: 'Portata fino a 1,250.5 m³/h.', expect: fail }
+
+  - id: ITIT-CUR-01
+    type: format
+    aspect: currency
+    severity: major
+    message: 'Italian amounts put the symbol after the number with a no-break space: 1.234,56 €.'
+    fix: Write 1.234,56 € (no-break space before the symbol).
+    tests:
+      - { target: 'A partire da 1.250,00 € + IVA.', expect: pass }
+      - { target: 'A partire da € 1.250,00 + IVA.', expect: fail }
+
+  - id: ITIT-DATE-01
+    type: format
+    aspect: date
+    severity: minor
+    message: 'Italian numeric dates are DD/MM/YYYY.'
+    fix: Write 30/09/2026.
+    tests:
+      - { target: 'Disponibile dal 30/09/2026.', expect: pass }
+      - { target: 'Disponibile dal 30.09.2026.', expect: fail }
+
+market_checks:
+  - id: ITIT-MARKET-PIVA
+    text: Italian commercial websites normally show the company's P.IVA (VAT number) and registered details in the footer.
+    verify_with_counsel: true
+  - id: ITIT-MARKET-CE
+    text: Reference the marcatura CE (and any ATEX marking) only for products that genuinely carry it.
+    verify_with_counsel: true
+  - id: ITIT-MARKET-LEGAL
+    text: Italian legal pages (informativa privacy under the GDPR, cookie policy, condizioni generali di vendita, company details including P.IVA) must be reviewed by counsel; translation alone does not make them compliant.
+    applies: legal_page
+    verify_with_counsel: true
+
+edge_exemplars: [edge_mixed_language, edge_legal_page]

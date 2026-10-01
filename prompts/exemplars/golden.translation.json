@@ -1,0 +1,38 @@
+{
+  "title": "Golden example — nl-NL → de-CH, TRANSLATION stage (neutral German; localization comes next)",
+  "glossary_shown": [
+    "GLOSS-0012 centrifugaalpomp → Kreiselpumpe",
+    "GLOSS-0019 opvoerhoogte → Förderhöhe"
+  ],
+  "input": {
+    "stage": "translation",
+    "source_locale": "nl-NL",
+    "target_locale": "de-CH",
+    "operation": "TRANSLATE_LOCALIZE",
+    "segments": [
+      {
+        "segment_id": "p-003",
+        "block_type": "paragraph",
+        "meta_kind": null,
+        "source_language": "nl",
+        "text": "Onze centrifugaalpompen leveren een debiet tot 450 m³/h bij een opvoerhoogte van 80 meter. Vraag vandaag nog een vrijblijvende offerte aan — levering binnen 5 werkdagen in heel Nederland.",
+        "glossary_term_ids": ["GLOSS-0012", "GLOSS-0019"]
+      }
+    ]
+  },
+  "thinking": "Glossary: centrifugaalpomp → Kreiselpumpe, opvoerhoogte → Förderhöhe. Entities to keep exactly: 450 m³/h and 80. The claim 'in heel Nederland' is translated faithfully now; the localization stage decides what to do with it. Translate neutrally: Angebot / Werktagen are fine here.",
+  "output": {
+    "results": [
+      {
+        "segment_id": "p-003",
+        "target_locale": "de-CH",
+        "translation": "Unsere Kreiselpumpen fördern bis zu 450 m³/h bei einer Förderhöhe von 80 Metern. Fordern Sie noch heute ein unverbindliches Angebot an – Lieferung innerhalb von 5 Werktagen in den gesamten Niederlanden.",
+        "entities_preserved": ["450 m³/h", "80"],
+        "terminology_applied": [
+          { "source": "centrifugaalpomp", "target": "Kreiselpumpe", "rule": "GLOSS-0012" },
+          { "source": "opvoerhoogte", "target": "Förderhöhe", "rule": "GLOSS-0019" }
+        ]
+      }
+    ]
+  }
+}

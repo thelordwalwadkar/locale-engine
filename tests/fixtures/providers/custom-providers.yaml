@@ -1,0 +1,25 @@
+# Fixture: a provider registered purely through YAML (R1). Paths in `module` are relative to the project root.
+version: 1
+providers:
+  echo:
+    kind: custom
+    module: tests/fixtures/providers/echo-adapter.mjs
+    description: Echo adapter (tests only)
+    default_model: echo-1
+    models:
+      echo-1:
+        id: echo-model-1
+        structured_output: native
+        unsupported_params: [temperature]
+        pricing: { input_per_mtok: 0, output_per_mtok: 0 }
+        pricing_verified: true
+  mock:
+    kind: mock
+    default_model: mock-a
+    models:
+      mock-a: { id: mock-a, structured_output: native, pricing: { input_per_mtok: 1, output_per_mtok: 2 }, pricing_verified: true }
+routing:
+  default_provider: mock
+  stages:
+    translation: echo
+    validation: mock

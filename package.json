@@ -1,0 +1,50 @@
+{
+  "name": "locale-engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Multi-locale content population engine: translate, localize and validate B2B web content (nl/en to en-NL, en-GB, de-DE, de-AT, de-CH, it-IT). CLI + REST + MCP, model-agnostic.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "bin": {
+    "locale": "dist/interfaces/cli.js",
+    "locale-api": "dist/interfaces/api.js",
+    "locale-mcp": "dist/interfaces/mcp_server.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "verify": "npm run typecheck && npm test",
+    "locale": "tsx src/interfaces/cli.ts",
+    "api": "tsx src/interfaces/api.ts",
+    "mcp": "tsx src/interfaces/mcp_server.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.129.0",
+    "@google/genai": "^2.24.0",
+    "@modelcontextprotocol/sdk": "^1.31.0",
+    "cheerio": "^1.2.0",
+    "commander": "^15.0.0",
+    "csv-parse": "^7.0.3",
+    "eld": "^2.1.0",
+    "exceljs": "^4.4.0",
+    "fastify": "^5.12.5",
+    "mammoth": "^1.13.0",
+    "marked": "^18.0.14",
+    "ollama": "^0.6.4",
+    "openai": "^7.25.0",
+    "robots-parser": "^3.0.1",
+    "yaml": "^2.9.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.2"
+  },
+  "license": "UNLICENSED"
+}

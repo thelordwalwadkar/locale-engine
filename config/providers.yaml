@@ -1,0 +1,303 @@
+# =====================================================================================================================
+# providers.yaml — every LLM vendor the engine can use (spec §4.5). Model ids live ONLY here; keys live ONLY in .env.
+# Switching the provider of any stage is a change to `routing` (or a per-run override), never a code change (R1).
+#
+# Per model
+#   id                  provider-side model id
+#   pricing             USD per 1M tokens: input, output, cached input (cache reads). cost_usd = tokens × price / 1e6.
+#   pricing_verified    true only when compared with the vendor's price page on the date in `notes`.
+#   structured_output   native    = vendor-enforced JSON Schema
+#                       json_mode = vendor guarantees valid JSON, the schema is in the prompt
+#                       prompted  = instruct + parse + validate + one repair retry
+#   unsupported_params  sampling parameters the model rejects or ignores: dropped and logged PARAM_UNSUPPORTED.
+# Per provider
+#   api_key_env / base_url / base_url_env / timeout_ms / max_retries, and `extra` (adapter knobs):
+#   extra.reasoning_effort: { <model key>: <level> } thinking depth per model, in the adapter's vocabulary
+#     anthropic: low|medium|high|xhigh|max   openai / openai_compatible: none|minimal|low|medium|high|xhigh|max
+#     google: minimal|low|medium|high        ollama: off|on|low|medium|high      (omit = the model's default)
+#   extra.extra_body (openai_compatible): vendor-specific request fields;  extra.keep_alive (ollama).
+#
+# Adding a provider: an OpenAI-compatible endpoint needs only a block below (kind: openai_compatible + base_url);
+# anything else needs one adapter module referenced by `kind: custom` + `module:`
+# (example: tests/fixtures/providers/echo-adapter.mjs).
+# =====================================================================================================================
+version: 1
+
+providers:
+  anthropic:
+    kind: anthropic
+    description: Anthropic Messages API (@anthropic-ai/sdk). Native JSON through output_config.format.
+    api_key_env: ANTHROPIC_API_KEY
+    default_model: sonnet
+    timeout_ms: 300000          # adaptive thinking runs inside max_tokens; large batches can take minutes
+    max_retries: 2
+    # extra:
+    #   reasoning_effort: { sonnet: medium, opus: medium }   # output_config.effort (Haiku 4.5 does not accept effort)
+    models:
+      sonnet:                   # strong and economical: translation, localization, repair, language detection
+        id: claude-sonnet-5-5
+        pricing: { input_per_mtok: 2.00, output_per_mtok: 10.00, cached_input_per_mtok: 0.20 }
+        pricing_verified: true
+        context_window: 1000000
+        max_output_tokens: 128000
+        structured_output: native
+        unsupported_params: [temperature, top_p, seed]   # non-default temperature/top_p -> 400; the API has no seed
+        notes: Verified 2026-09-30 against the claude-api skill model table (cached 2026-09-25). Check https://platform.claude.com/docs/en/about-claude/pricing
+      opus:                     # strongest
+        id: claude-opus-5-5
+        pricing: { input_per_mtok: 4.00, output_per_mtok: 20.00, cached_input_per_mtok: 0.20 }
+        pricing_verified: true
+        context_window: 1000000
+        max_output_tokens: 128000
+        structured_output: native
+        unsupported_params: [temperature, top_p, seed]   # sampling parameters removed (400); thinking cannot be disabled
+        notes: Verified 2026-09-30 against the claude-api skill model table (cached 2026-09-25). Check https://platform.claude.com/docs/en/about-claude/pricing
+      haiku:                    # cheap and fast
+        id: claude-haiku-4-5
+        pricing: { input_per_mtok: 1.00, output_per_mtok: 5.00 }
+        pricing_verified: true
+        context_window: 200000
+        max_output_tokens: 64000
+        structured_output: native
+        unsupported_params: [top_p, seed]                 # temperature works, but never together with top_p
+        notes: Verified 2026-09-30 against the claude-api skill model table (cached 2026-09-25). Check https://platform.claude.com/docs/en/about-claude/pricing
+
+  openai:
+    kind: openai
+    description: OpenAI Responses API (openai SDK). Native JSON through text.format json_schema (strict). Default judge.
+    api_key_env: OPENAI_API_KEY
+    default_model: sol
+    timeout_ms: 300000
+    max_retries: 2
+    models:
+      sol:                      # balanced: the default judge / back-translator
+        id: gpt-6.1-sol
+        pricing: { input_per_mtok: 2.00, output_per_mtok: 10.00, cached_input_per_mtok: 0.10 }
+        pricing_verified: true
+        context_window: 1050000
+        max_output_tokens: 128000
+        structured_output: native
+        unsupported_params: [temperature, top_p, seed]   # reasoning model: sampling only with effort none (not offered); no seed on Responses
+        notes: Verified 2026-09-30 on https://developers.openai.com/api/docs/pricing and the model page.
+      astra:                    # strongest
+        id: gpt-6-astra
+        pricing: { input_per_mtok: 10.00, output_per_mtok: 50.00, cached_input_per_mtok: 1.00 }
+        pricing_verified: true
+        context_window: 1050000
+        max_output_tokens: 128000
+        structured_output: native
+        unsupported_params: [temperature, top_p, seed]
+        notes: Verified 2026-09-30 on https://developers.openai.com/api/docs/pricing.
+      luna:                     # cheapest and fastest
+        id: gpt-6-luna
+        pricing: { input_per_mtok: 0.10, output_per_mtok: 0.50, cached_input_per_mtok: 0.01 }
+        pricing_verified: true
+        context_window: 1050000
+        max_output_tokens: 128000
+        structured_output: native
+        unsupported_params: [temperature, top_p, seed]   # sampling only at reasoning effort none (default is medium)
+        notes: Verified 2026-09-30 on https://developers.openai.com/api/docs/pricing and the model page (max input 922k tokens).
+
+  google:
+    kind: google
+    description: Google Gemini API (@google/genai). Native JSON through responseJsonSchema.
+    api_key_env: GOOGLE_API_KEY
+    default_model: flash
+    timeout_ms: 300000
+    max_retries: 2
+    models:
+      flash:                    # most capable stable Gemini model
+        id: gemini-3.8-flash
+        pricing: { input_per_mtok: 0.75, output_per_mtok: 3.75, cached_input_per_mtok: 0.075 }
+        pricing_verified: true
+        context_window: 1048576
+        max_output_tokens: 65536
+        structured_output: native
+        unsupported_params: [temperature]   # Gemini 3: keep the default 1.0, lower values may loop
+        notes: Verified 2026-09-30 on https://ai.google.dev/gemini-api/docs/pricing. Introductory price until 2026-12-31; from 2027-01-01 input 1.50, output 7.50, cached 0.15.
+      pro:                      # strongest (preview)
+        id: gemini-3.1-pro-preview
+        pricing: { input_per_mtok: 2.00, output_per_mtok: 12.00, cached_input_per_mtok: 0.20 }
+        pricing_verified: true
+        context_window: 1048576
+        max_output_tokens: 65536
+        structured_output: native
+        unsupported_params: [temperature]
+        notes: Verified 2026-09-30 on https://ai.google.dev/gemini-api/docs/pricing for prompts up to 200k tokens (above 200k input 4.00, output 18.00, cached 0.40). Preview model.
+      lite:                     # cheapest and fastest
+        id: gemini-3.5-flash-lite
+        pricing: { input_per_mtok: 0.30, output_per_mtok: 2.50, cached_input_per_mtok: 0.03 }
+        pricing_verified: true
+        context_window: 1048576
+        max_output_tokens: 65536
+        structured_output: native
+        unsupported_params: [temperature]
+        notes: Verified 2026-09-30 on https://ai.google.dev/gemini-api/docs/pricing.
+
+  deepseek:
+    kind: openai_compatible
+    description: DeepSeek API (OpenAI-compatible). JSON mode only (no json_schema).
+    api_key_env: DEEPSEEK_API_KEY
+    base_url: https://api.deepseek.com
+    default_model: pro
+    timeout_ms: 300000
+    models:
+      pro:
+        id: deepseek-v4-pro
+        pricing: { input_per_mtok: 1.32, output_per_mtok: 3.96, cached_input_per_mtok: 0.044 }
+        pricing_verified: true
+        context_window: 1000000
+        max_output_tokens: 384000
+        structured_output: json_mode
+        notes: Verified 2026-09-30 on https://api-docs.deepseek.com/quick_start/pricing. Peak-hour prices (off-peak is half) so the cost ceiling never under-counts.
+      flash:
+        id: deepseek-flash
+        pricing: { input_per_mtok: 0.30, output_per_mtok: 1.20, cached_input_per_mtok: 0.006 }
+        pricing_verified: true
+        context_window: 1000000
+        max_output_tokens: 384000
+        structured_output: json_mode
+        notes: Verified 2026-09-30 on https://api-docs.deepseek.com/quick_start/pricing (DeepSeek-V4.1-Flash). Peak-hour prices.
+
+  mistral:
+    kind: openai_compatible
+    description: Mistral La Plateforme (OpenAI-compatible chat completions).
+    api_key_env: MISTRAL_API_KEY
+    base_url: https://api.mistral.ai/v1
+    default_model: medium
+    models:
+      medium:
+        id: mistral-medium-latest
+        pricing: { input_per_mtok: 1.50, output_per_mtok: 7.50, cached_input_per_mtok: 0.15 }
+        pricing_verified: false
+        structured_output: json_mode
+        notes: Prices of Mistral Medium 3.5 on https://mistral.ai/pricing/api (2026-09-30); that the -latest alias points to it is unconfirmed. Verify at https://docs.mistral.ai/models/overview
+      small:
+        id: mistral-small-latest
+        pricing: { input_per_mtok: 0.15, output_per_mtok: 0.60, cached_input_per_mtok: 0.015 }
+        pricing_verified: false
+        structured_output: json_mode
+        notes: Prices of Mistral Small 4 on https://mistral.ai/pricing/api (2026-09-30); alias mapping unconfirmed.
+
+  groq:
+    kind: openai_compatible
+    description: GroqCloud (OpenAI-compatible). Strict json_schema on the gpt-oss models.
+    api_key_env: GROQ_API_KEY
+    base_url: https://api.groq.com/openai/v1
+    default_model: oss-120b
+    models:
+      oss-120b:
+        id: openai/gpt-oss-120b
+        pricing: { input_per_mtok: 0.15, output_per_mtok: 0.60 }
+        pricing_verified: true
+        context_window: 131072
+        max_output_tokens: 65536
+        structured_output: native
+        notes: Verified 2026-09-30 on https://console.groq.com/docs/models (strict structured outputs per /docs/structured-outputs).
+      oss-20b:
+        id: openai/gpt-oss-20b
+        pricing: { input_per_mtok: 0.075, output_per_mtok: 0.30 }
+        pricing_verified: true
+        context_window: 131072
+        max_output_tokens: 65536
+        structured_output: native
+        notes: Verified 2026-09-30 on https://console.groq.com/docs/models.
+
+  openrouter:
+    kind: openai_compatible
+    description: OpenRouter (OpenAI-compatible router). The serving upstream decides what is supported.
+    api_key_env: OPENROUTER_API_KEY
+    base_url: https://openrouter.ai/api/v1
+    default_model: oss-120b
+    models:
+      oss-120b:
+        id: openai/gpt-oss-120b
+        pricing: { input_per_mtok: 0.15, output_per_mtok: 0.60 }
+        pricing_verified: false
+        structured_output: prompted
+        notes: Estimate (Groq / Together list price). OpenRouter's price depends on the routed upstream; check https://openrouter.ai/openai/gpt-oss-120b
+      gemini-flash:
+        id: google/gemini-3.8-flash
+        pricing: { input_per_mtok: 0.75, output_per_mtok: 3.75 }
+        pricing_verified: false
+        structured_output: prompted
+        unsupported_params: [temperature]
+        notes: Estimate from Google's list price; check https://openrouter.ai/google/gemini-3.8-flash
+
+  together:
+    kind: openai_compatible
+    description: Together AI serverless inference (OpenAI-compatible).
+    api_key_env: TOGETHER_API_KEY
+    base_url: https://api.together.xyz/v1
+    default_model: glm
+    models:
+      glm:
+        id: zai-org/GLM-5.3
+        pricing: { input_per_mtok: 1.40, output_per_mtok: 4.40 }
+        pricing_verified: true
+        context_window: 1048575
+        structured_output: native
+        notes: Verified 2026-09-30 on https://www.together.ai/pricing and https://docs.together.ai/docs/serverless/models (structured outputs yes).
+      oss-120b:
+        id: openai/gpt-oss-120b
+        pricing: { input_per_mtok: 0.15, output_per_mtok: 0.60 }
+        pricing_verified: true
+        context_window: 131072
+        structured_output: native
+        notes: Verified 2026-09-30 on https://www.together.ai/pricing and the serverless model catalog.
+
+  # A self-hosted OpenAI-compatible server (vLLM, llama.cpp server, LM Studio) needs no adapter code, e.g.:
+  # vllm:
+  #   kind: openai_compatible
+  #   base_url: http://127.0.0.1:8000/v1        # no api_key_env: keyless local server
+  #   default_model: local
+  #   models:
+  #     local: { id: Qwen/Qwen3.8-27B, structured_output: native, pricing: { input_per_mtok: 0, output_per_mtok: 0 }, pricing_verified: true }
+
+  ollama:
+    kind: ollama
+    description: Local models through the Ollama REST API (/api/chat). No key, no per-token cost.
+    base_url: http://127.0.0.1:11434
+    base_url_env: OLLAMA_HOST
+    default_model: qwen3
+    timeout_ms: 600000          # local inference is slow on CPUs
+    max_retries: 1
+    models:
+      qwen3:
+        id: qwen3:8b
+        pricing: { input_per_mtok: 0, output_per_mtok: 0 }
+        pricing_verified: true
+        structured_output: native
+        notes: Local model, no token cost. Pull it first ("ollama pull qwen3:8b"); any pulled model id works here.
+      gemma3:
+        id: gemma3:27b
+        pricing: { input_per_mtok: 0, output_per_mtok: 0 }
+        pricing_verified: true
+        structured_output: native
+        notes: Local model, no token cost ("ollama pull gemma3:27b").
+
+  mock:
+    kind: mock
+    description: Offline mock provider (tests, demos, comparison harness). Replays fixtures; no network.
+    default_model: mock-a
+    models:
+      mock-a:
+        id: mock-a
+        structured_output: native
+        pricing: { input_per_mtok: 1, output_per_mtok: 2 }
+        pricing_verified: true
+      mock-b:
+        id: mock-b
+        structured_output: native
+        pricing: { input_per_mtok: 1.5, output_per_mtok: 3 }
+        pricing_verified: true
+
+routing:
+  default_provider: anthropic          # {{DEFAULT_PROVIDER}}; also the fallback when a routed provider has no key
+  stages:
+    language_detection: anthropic
+    translation: anthropic
+    localization: anthropic
+    repair: anthropic
+    validation: openai                 # {{JUDGE_PROVIDER}}: a different vendor than the translator (ARCHITECTURE P4)
+    backtranslation: openai

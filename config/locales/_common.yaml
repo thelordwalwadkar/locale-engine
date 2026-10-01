@@ -1,0 +1,382 @@
+# =====================================================================================================================
+# _common.yaml — rules and data shared by every locale (FROZEN in Phase 1; later phases only read it).
+#
+# Regex conventions (see src/schemas/locale.ts): JS regex sources, flags u+g(+i), `\b` is rewritten by the engine
+# to a Unicode-aware word boundary. Tests run under target_locale de-DE unless a test says otherwise.
+# =====================================================================================================================
+version: 1
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Entity patterns: what must survive translation byte-identical (spec §4.4)
+# ---------------------------------------------------------------------------------------------------------------------
+entities:
+  product_code_patterns:
+    - '\b[A-Z]{1,5}-\d{2,}[A-Z0-9-]*\b'      # N-3085, JESX-50, NP-3085, ISO-9001
+    - '\b[A-Z]{2,6}\d{2,}[A-Z0-9-]*\b'       # PN16, DN50, IP55, LSB50
+  symbol_units:
+    - 'm³/h'
+    - 'm³/s'
+    - 'm³/min'
+    - 'm³'
+    - 'm²'
+    - 'l/s'
+    - 'l/min'
+    - 'l/h'
+    - 'L/s'
+    - 'L/min'
+    - 'mbar'
+    - 'barg'
+    - 'bar'
+    - 'kPa'
+    - 'MPa'
+    - 'Pa'
+    - 'psi'
+    - 'kWh'
+    - 'kW'
+    - 'MW'
+    - 'Wh'
+    - 'W'
+    - 'kVA'
+    - 'VA'
+    - 'kV'
+    - 'V'
+    - 'mA'
+    - 'A'
+    - 'kHz'
+    - 'Hz'
+    - 'rpm'
+    - 'min⁻¹'
+    - '1/min'
+    - '°C'
+    - '°F'
+    - 'K'
+    - '%'
+    - '‰'
+    - 'mm'
+    - 'cm'
+    - 'dm'
+    - 'km'
+    - 'µm'
+    - 'μm'
+    - 'm/s'
+    - 'm/h'
+    - 'kNm'
+    - 'Nm'
+    - 'kg'
+    - 'mg'
+    - 'dB(A)'
+    - 'dB'
+    - 'ml'
+    - 'cl'
+    - 'mWC'
+    - 'mH2O'
+    - 'mWS'
+    - 'm'
+    - 'g'
+    - 't'
+    - 'l'
+  phone_patterns:
+    - '\+\d{1,3}(?:[\s.-]?\(?\d\)?){8,12}'   # +31 20 123 4567, +41 (0)44 123 45 67
+    - '\b0(?:[\s.-]?\d){9}\b'                # 020 123 4567, 06-12345678
+  # The NUMBER part of names and standard designations: never reformatted, compared verbatim in every language.
+  protected_patterns:
+    - '(?<=\b(?:Industrie|Industry|Industria)\s)4\.0(?![\p{L}\p{N}])'                                   # Industrie 4.0 (not 4,0)
+    - '(?<=\bWeb\s)[23]\.0(?![\p{L}\p{N}])'                                                              # Web 2.0 / 3.0
+    - '(?<=\b(?:ISO|EN|DIN|IEC|NEN|ASTM|API|ANSI|NFPA|VDI|DVGW|VDMA|NPR)\s)\d[\d.:/-]*\d'               # EN 12845:2019, IEC 60034-30-1
+  url_pattern: 'https?:\/\/[^\s<>"'')\]]+|\bwww\.[^\s<>"'')\]]+'
+  email_pattern: '[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+'
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Market claims (INTEGRITY-MARKET-CLAIM): phrases that name a country as a scope of service.
+# ---------------------------------------------------------------------------------------------------------------------
+market_claims:
+  countries:
+    NL: { regions: [NL], names: ['Nederland', 'Netherlands', 'Niederlande', 'Niederlanden', 'Holland', 'Olanda', 'Paesi Bassi'] }
+    BENELUX: { regions: [NL, BE, LU], names: ['Benelux'] }
+    BE: { regions: [BE], names: ['België', 'Belgie', 'Belgium', 'Belgien', 'Belgio'] }
+    LU: { regions: [LU], names: ['Luxemburg', 'Luxembourg', 'Lussemburgo'] }
+    DE: { regions: [DE], names: ['Duitsland', 'Germany', 'Deutschland', 'Germania'] }
+    AT: { regions: [AT], names: ['Oostenrijk', 'Austria', 'Österreich', 'Oesterreich'] }
+    CH: { regions: [CH], names: ['Zwitserland', 'Switzerland', 'Schweiz', 'Svizzera'] }
+    IT: { regions: [IT], names: ['Italië', 'Italie', 'Italy', 'Italien', 'Italia'] }
+    GB:
+      regions: [GB]
+      names:
+        - 'Verenigd Koninkrijk'
+        - 'United Kingdom'
+        - 'Great Britain'
+        - 'Britain'
+        - 'UK'
+        - 'Groot-Brittannië'
+        - 'Groot-Brittannie'
+        - 'Vereinigtes Königreich'
+        - 'Vereinigten Königreich'
+        - 'Großbritannien'
+        - 'Grossbritannien'
+        - 'Regno Unito'
+        - 'Gran Bretagna'
+        - 'Engeland'
+        - 'England'
+    FR: { regions: [FR], names: ['Frankrijk', 'France', 'Frankreich', 'Francia'] }
+  # `{COUNTRY}` is replaced by an alternation of all names of one country (longest first).
+  scope_patterns:
+    # --- whole-country scope ------------------------------------------------------------------------------------
+    - '\b(?:in|door|over|binnen|voor)\s+(?:heel|geheel|gans)\s+{COUNTRY}'          # nl: in heel Nederland
+    - '\b(?:in|door|over|binnen)\s+(?:de|het)\s+hele\s+{COUNTRY}'                  # nl: in het hele land
+    - '\b(?:across|throughout|all\s+over)\s+(?:the\s+)?(?:whole\s+of\s+|entire\s+)?{COUNTRY}'   # en
+    - '\bin\s+(?:all\s+of|the\s+whole\s+of|the\s+entire)\s+(?:the\s+)?{COUNTRY}'   # en
+    - '\b(?:in|durch|über)\s+ganz\s+{COUNTRY}'                                     # de: in ganz Deutschland
+    - '\bin\s+(?:den|der|dem|die|das)\s+(?:gesamten|ganzen)\s+{COUNTRY}'           # de: in den gesamten Niederlanden
+    - '\bin\s+tutta\s+(?:l[''’])?{COUNTRY}'                                         # it: in tutta Italia
+    - '\bin\s+tutto\s+(?:il\s+)?{COUNTRY}'                                          # it
+    # --- delivery / service to a country --------------------------------------------------------------------------
+    - '\b(?:levering|bezorging|verzending|service|onderhoud)\s+(?:in|naar)\s+(?:de\s+)?{COUNTRY}'
+    - '\b(?:delivery|shipping|dispatch|service)\s+(?:to|in)\s+(?:the\s+)?{COUNTRY}'
+    - '\b(?:Lieferung|Versand|Service)\s+(?:in|nach)\s+(?:die\s+|den\s+|der\s+)?{COUNTRY}'
+    - '\b(?:consegna|spedizione|assistenza|servizio)\s+(?:in|per)\s+(?:l[''’]\s*)?{COUNTRY}'
+  # Scope without a country name; the claim belongs to the SOURCE market.
+  generic_scope_patterns:
+    - '\blandelijk(?:e)?\b'
+    - '\bnationwide\b'
+    - '\bbundesweit\b'
+    - '\b(?:deutschland|schweiz|österreich)weit\b'
+    - '\bin\s+tutto\s+il\s+(?:Paese|territorio\s+nazionale)\b'
+
+currency:
+  symbols:
+    EUR: '€'
+    GBP: '£'
+    CHF: 'CHF'
+    USD: '$'
+
+month_names:
+  nl: [januari, februari, maart, april, mei, juni, juli, augustus, september, oktober, november, december]
+  en: [January, February, March, April, May, June, July, August, September, October, November, December]
+  de: [Januar, Februar, März, April, Mai, Juni, Juli, August, September, Oktober, November, Dezember]
+  de-AT: [Jänner, Februar, März, April, Mai, Juni, Juli, August, September, Oktober, November, Dezember]
+  it: [gennaio, febbraio, marzo, aprile, maggio, giugno, luglio, agosto, settembre, ottobre, novembre, dicembre]
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Shared lexicons (referenced by lexicon_ref from locale files)
+# ---------------------------------------------------------------------------------------------------------------------
+lexicons:
+  # US -> British spelling (en-NL, en-GB). Every term is safe to auto-apply.
+  en_uk_spelling:
+    - { pattern: '\b(col|behavi|lab|fav|hon|flav|neighb|harb|hum|rum|vap|od|endeav|arm)or(s|ed|ing|ful|less|ite|ites|able)?\b', prefer: '$1our$2' }
+    - { pattern: '\bcenter(s|ed|ing)?\b', prefer: 'centre$1' }
+    - { pattern: '\b(kilo|milli|centi|deci)meter(s?)\b', prefer: '$1metre$2' }
+    - { pattern: '(?<=\d[\s ]?)meter(s?)\b', prefer: 'metre$1' }
+    - { pattern: '\b(cubic|square)\s+meter(s?)\b', prefer: '$1 metre$2' }
+    - { pattern: '\bliter(s?)\b', prefer: 'litre$1' }
+    - { pattern: '\baluminum\b', prefer: 'aluminium' }
+    - { pattern: '\b(organi|optimi|standardi|minimi|maximi|customi|utili|recogni|authori|categori|characteri|emphasi|finali|harmoni|initiali|legali|locali|moderni|normali|prioriti|summari|synchroni|visuali|digiti|mobili|stabili|sterili)z(e|es|ed|ing|ation|ations)\b', prefer: '$1s$2' }
+    - { pattern: '\b(analy|paraly|cataly)z(e|es|ed|ing)\b', prefer: '$1s$2' }
+    - { pattern: '\bgray\b', prefer: 'grey' }
+    - { pattern: '\bcatalog(s?)\b', prefer: 'catalogue$1' }
+    - { pattern: '\bdefense\b', prefer: 'defence' }
+    - { pattern: '\bfiber(s?)\b', prefer: 'fibre$1' }
+    - { pattern: '\bmold(s|ed|ing)?\b', prefer: 'mould$1' }
+    - { pattern: '\b(travel|model|label|level|signal|channel|fuel)(ed|ing)\b', prefer: '$1l$2' }
+    - { pattern: '\bcancel(ed|ing)\b', prefer: 'cancell$1' }
+    - { pattern: '\bfulfill\b', prefer: 'fulfil' }
+    - { pattern: '\bfulfillment\b', prefer: 'fulfilment' }
+
+  # German orthography leaking from Swiss usage into de-DE / de-AT: ss -> ß where Standard German writes ß.
+  de_eszett:
+    - { pattern: '\bGrösse(n?)\b', prefer: 'Größe$1' }
+    - { pattern: '\bgross(e|en|er|es|em)?\b', prefer: 'groß$1' }
+    - { pattern: '\b(\p{L}*)strasse(n?)\b', prefer: '$1straße$2' }
+    - { pattern: '\bheiss(e|en|er|es|em)?\b', prefer: 'heiß$1' }
+    - { pattern: '\bweiss(e|en|er|es|em)?\b', prefer: 'weiß$1' }
+    - { pattern: '\bausser(dem|halb)?\b', prefer: 'außer$1' }
+    - { pattern: '\bgemäss\b', prefer: 'gemäß' }
+    - { pattern: '\bschliess(e|en|t|lich|ung)\b', prefer: 'schließ$1' }
+    - { pattern: '\bMassnahme(n?)\b', prefer: 'Maßnahme$1' }
+    - { pattern: '\bGrüsse(n?)\b', prefer: 'Grüße$1' }
+    - { pattern: '\bFuss\b', prefer: 'Fuß' }
+    - { pattern: '\b(\p{L}*)verschleiss(\p{L}*)\b', prefer: '$1verschleiß$2' }
+
+  # Low-high German quotation marks „…“ (de-DE, de-AT).
+  de_quotes:
+    - { pattern: '"([^"\n]{1,300})"', prefer: '„$1“', preserve_case: false }
+    - { pattern: '“([^”\n]{1,300})”', prefer: '„$1“', preserve_case: false }
+    - { pattern: '«([^»\n]{1,300})»', prefer: '„$1“', preserve_case: false }
+
+  # German textual dates need a period after the day: "30. September 2026".
+  de_date_period:
+    - { pattern: '\b(\d{1,2}) (Januar|Jänner|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)\b', prefer: '$1. $2', preserve_case: false }
+
+  # Informal German address is wrong in B2B copy (formal Sie).
+  de_informal_du:
+    - { pattern: '\b(?:du|dich|dir|dein(?:e|en|em|er|es)?)\b', note: 'informal address; use Sie / Ihr' }
+
+# =====================================================================================================================
+# Rules shared by all locales
+# =====================================================================================================================
+rules:
+
+  # ----- Integrity (spec §4.4) -------------------------------------------------------------------------------------
+  - id: INTEGRITY-ENTITY
+    type: entity_preservation
+    kinds: [number, unit, product_code, brand, phone]
+    severity: critical
+    message: Numbers, units, product codes, model names, brand names and phone numbers must survive translation unchanged. Only separators, currency position and numeric date shape may be reformatted, and each reformat is logged as FORMAT_CHANGE.
+    fix: Restore the original entity exactly as written in the source.
+    tests:
+      - { source: 'Onze pomp levert 450 m³/h bij 80 meter.', target: 'Unsere Pumpe fördert 450 m³/h bei 80 Metern.', expect: pass }
+      - { source: 'Onze pomp levert 450 m³/h bij 80 meter.', target: 'Unsere Pumpe fördert 540 m³/h bei 80 Metern.', expect: fail, note: number altered }
+      - { source: 'Onze pomp levert 450 m³/h bij 80 meter.', target: 'Unsere Pumpe fördert 450 m³/s bei 80 Metern.', expect: fail, note: unit altered }
+      - { source: 'Onze pomp levert 450 m³/h bij 80 meter.', target: 'Unsere Pumpe fördert bei 80 Metern viel Wasser.', expect: fail, note: number missing }
+      - { source: 'Pomp N-3085 van Flygt.', target: 'Pumpe N-3085 von Flygt.', expect: pass }
+      - { source: 'Pomp N-3085 van Flygt.', target: 'Pumpe N-3058 von Flygt.', expect: fail, note: product code altered }
+      - { source: 'Pomp N-3085 van Flygt.', target: 'Pumpe N-3085 von Flügt.', expect: fail, note: brand altered }
+      - { source: 'Prijs € 1.250,00 excl. BTW.', target: 'Price €1,250.00 excl. VAT.', target_locale: en-GB, expect: pass, note: separator and symbol reformat is allowed }
+      - { source: 'Prijs € 1.250,00 excl. BTW.', target: 'Preis: 1''250.00 € zzgl. MWST.', target_locale: de-CH, expect: pass, note: value preserved }
+      - { source: 'Prijs 1.250 euro.', target: 'Price 1.250 euro.', target_locale: en-GB, expect: fail, note: '1.250 means 1250 in Dutch but 1.25 in English' }
+      - { source: 'Levering binnen 5 werkdagen.', target: 'Lieferung innert 5 Arbeitstagen.', expect: pass }
+      - { source: 'Bel 020 123 4567 of +31 6 12345678.', target: 'Rufen Sie 020 123 4567 oder +31 6 12345678 an.', expect: pass }
+      - { source: 'Bel 020 123 4567.', target: 'Rufen Sie 020 123 4568 an.', expect: fail, note: phone altered }
+
+  - id: INTEGRITY-URL
+    type: entity_preservation
+    kinds: [url]
+    severity: critical
+    message: URLs must be preserved byte-identical.
+    fix: Restore the URL exactly as in the source.
+    tests:
+      - { source: 'Zie https://www.example.nl/pompen voor meer.', target: 'Siehe https://www.example.nl/pompen für mehr.', expect: pass }
+      - { source: 'Zie https://www.example.nl/pompen voor meer.', target: 'Siehe https://www.example.de/pumpen für mehr.', expect: fail }
+
+  - id: INTEGRITY-EMAIL
+    type: entity_preservation
+    kinds: [email]
+    severity: critical
+    message: E-mail addresses must be preserved byte-identical.
+    fix: Restore the e-mail address exactly as in the source.
+    tests:
+      - { source: 'Mail naar info@example.nl.', target: 'Schreiben Sie an info@example.nl.', expect: pass }
+      - { source: 'Mail naar info@example.nl.', target: 'Schreiben Sie an info@beispiel.de.', expect: fail }
+
+  - id: INTEGRITY-TAGS
+    type: inline_tags
+    severity: critical
+    message: Inline tag placeholders such as <a1>…</a1> must all survive exactly once and be properly nested. Their order may change with the target grammar.
+    fix: Restore the missing placeholders / close the unclosed ones.
+    tests:
+      - { source: 'Zie <a1>onze pompen</a1>.', target: 'Siehe <a1>unsere Pumpen</a1>.', expect: pass }
+      - { source: 'Zie <a1>onze pompen</a1>.', target: 'Siehe unsere Pumpen.', expect: fail, note: placeholders dropped }
+      - { source: 'Zie <a1>onze pompen</a1>.', target: 'Siehe <a1>unsere Pumpen.', expect: fail, note: unclosed }
+      - { source: 'Zie <a1>pompen</a1> en <strong2>prijzen</strong2>.', target: 'Sehen Sie <strong2>Preise</strong2> und <a1>Pumpen</a1>.', expect: pass, note: reordering is fine }
+
+  - id: INTEGRITY-EMPTY
+    type: empty_output
+    severity: critical
+    message: The target is empty although the source has text.
+    fix: Produce the translation.
+    tests:
+      - { source: 'Bel ons voor advies.', target: '', expect: fail }
+      - { source: 'Bel ons voor advies.', target: 'Rufen Sie uns für eine Beratung an.', expect: pass }
+
+  - id: INTEGRITY-UNTRANSLATED
+    type: untranslated
+    min_words: 3
+    severity: major
+    message: The target is identical to the source although the languages differ; the segment was not translated.
+    fix: Translate the segment.
+    tests:
+      - { source: 'Onze pompen leveren een hoog rendement.', target: 'Onze pompen leveren een hoog rendement.', expect: fail }
+      - { source: 'Onze pompen leveren een hoog rendement.', target: 'Unsere Pumpen liefern einen hohen Wirkungsgrad.', expect: pass }
+      - { source: 'Our pumps deliver high efficiency.', source_lang: en, source_locale: en-GB, target: 'Our pumps deliver high efficiency.', target_locale: en-GB, operation: SKIP_IDENTICAL, expect: pass, note: same locale is skipped on purpose }
+
+  - id: INTEGRITY-MARKET-CLAIM
+    type: market_claim
+    severity: major
+    message: A claim that names a market ("delivery across the Netherlands") is a business fact. Unless market_facts.yaml supplies the fact for the target market, or the target market is the claim's own country, the geographic scope must be neutralised and a human must confirm it.
+    fix: Remove the geographic scope from the sentence (or use the delivery phrase from market_facts.yaml) and keep everything else unchanged.
+    tests:
+      - { source: 'Levering binnen 5 werkdagen in heel Nederland.', target: 'Lieferung innert 5 Arbeitstagen in den gesamten Niederlanden.', target_locale: de-CH, expect: fail, note: claim restated for a market with no fact }
+      - { source: 'Levering binnen 5 werkdagen in heel Nederland.', target: 'Lieferung innert 5 Arbeitstagen.', target_locale: de-CH, expect: pass, note: neutralised }
+      - { source: 'Levering in heel Nederland.', target: 'Delivery across the Netherlands.', target_locale: en-NL, expect: pass, note: claim country equals target region }
+      - { source: 'Levering in heel Nederland.', target: 'Delivery across the Netherlands.', target_locale: en-GB, expect: fail }
+      - { source: 'Levering in heel Nederland.', target: 'Lieferung in die ganze Schweiz.', target_locale: de-CH, market_facts: { delivery: 'in die ganze Schweiz' }, expect: pass, note: fact supplied by the business }
+      - { source: 'Landelijke dekking met eigen servicewagens.', target: 'Nationwide coverage with our own service vans.', target_locale: en-GB, expect: fail, note: generic scope claim of the source market }
+
+  # ----- Currency policy (document level) -------------------------------------------------------------------------
+  - id: CURRENCY-POLICY-01
+    type: currency_policy
+    severity: minor
+    hypothesis: true
+    message: Amounts are retained in their source currency and never converted. If the target market prices in another currency the business must supply the converted prices.
+    fix: Confirm the currency policy for this market and add `currency` to market_facts.yaml.
+    tests:
+      - { source: 'Prijs € 1.250,00 excl. BTW.', target: 'Price €1,250.00 excl. VAT.', target_locale: en-GB, expect: fail, note: UK buyers expect GBP and no fact is supplied }
+      - { source: 'Prijs € 1.250,00 excl. BTW.', target: 'Price €1,250.00 excl. VAT.', target_locale: en-GB, market_facts: { currency: EUR }, expect: pass }
+      - { source: 'Prijs € 1.250,00 excl. BTW.', target: 'Price €1,250.00 excl. VAT.', target_locale: en-GB, market_facts: { currency: GBP }, expect: fail, note: GBP prices must be supplied by the business }
+      - { source: 'Prijs € 1.250,00 excl. BTW.', target: 'Preis 1.250,00 € zzgl. MwSt.', target_locale: de-DE, expect: pass, note: EUR market }
+      - { source: 'Bel ons voor advies.', target: 'Price on request.', target_locale: en-GB, expect: pass, note: no amounts }
+
+  # ----- Terminology ------------------------------------------------------------------------------------------------
+  - id: TERM-GLOSSARY-01
+    type: terminology
+    severity: minor
+    message: A glossary term of the source was not rendered with the approved target term.
+    fix: Use the approved term from the glossary hit.
+    tests:
+      - { source: 'Onze centrifugaalpompen zijn robuust.', target: 'Unsere Pumpen sind robust.', expect: fail }
+      - { source: 'Onze centrifugaalpompen zijn robuust.', target: 'Unsere Kreiselpumpen sind robust.', expect: pass }
+
+  # ----- Back-translation drift ---------------------------------------------------------------------------------------
+  - id: BT-DRIFT-01
+    type: backtranslation_similarity
+    severity: minor
+    hypothesis: true
+    message: The back-translation differs strongly from the source; the translation may have drifted in meaning (heuristic).
+    fix: Compare the source and the back-translation and restore any dropped or altered statement.
+    tests:
+      - { source: 'Onze pompen leveren een hoog rendement bij lage kosten.', target: 'Unsere Pumpen liefern einen hohen Wirkungsgrad bei niedrigen Kosten.', back_translation: { text: 'Onze pompen leveren een hoog rendement tegen lage kosten.', lang: nl }, expect: pass }
+      - { source: 'Onze pompen leveren een hoog rendement bij lage kosten.', target: 'Unsere Pumpen liefern einen hohen Wirkungsgrad bei niedrigen Kosten.', back_translation: { text: 'De kat zit op de mat.', lang: nl }, expect: fail }
+      - { source: 'Onze pompen leveren een hoog rendement bij lage kosten.', target: 'Unsere Pumpen liefern einen hohen Wirkungsgrad bei niedrigen Kosten.', back_translation: { text: 'Our pumps deliver high efficiency at low cost.', lang: en }, expect: pass, note: different languages cannot be compared lexically }
+
+  # ----- SEO (spec §4.3) ---------------------------------------------------------------------------------------------
+  - id: SEO-TITLE-LEN
+    type: length
+    max_chars: 60
+    applies_to: [meta]
+    meta_kinds: [title, og_title]
+    severity: minor
+    repair_trigger: true
+    message: The <title> should not exceed 60 characters (it is truncated in search results).
+    fix: Shorten the title to at most 60 characters without changing its meaning or dropping the primary keyword.
+    tests:
+      - { target: 'Kreiselpumpen für die Industrie | Beratung und Service', block_type: meta, meta_kind: title, expect: pass }
+      - { target: 'Kreiselpumpen für die Industrie | Beratung und Service in CH', block_type: meta, meta_kind: title, expect: pass, note: exactly 60 }
+      - { target: 'Kreiselpumpen für die Industrie | Beratung, Lieferung, Wartung', block_type: meta, meta_kind: title, expect: fail, note: 62 characters }
+      - { target: 'Kreiselpumpen für die Industrie | Beratung, Lieferung und Service in ganz Europa', block_type: meta, meta_kind: title, expect: fail }
+
+  - id: SEO-META-LEN
+    type: length
+    max_chars: 155
+    applies_to: [meta]
+    meta_kinds: [description, og_description]
+    severity: minor
+    repair_trigger: true
+    message: The meta description should not exceed 155 characters.
+    fix: Shorten the description to at most 155 characters, keeping the call to action.
+    tests:
+      - { target: 'Kreiselpumpen für Industrie und Wasserwirtschaft: Beratung, Lieferung und Wartung aus einer Hand. Jetzt eine unverbindliche Offerte anfordern. Jetzt sehen.', block_type: meta, meta_kind: description, expect: pass, note: exactly 155 }
+      - { target: 'Kreiselpumpen für Industrie und Wasserwirtschaft: Beratung, Lieferung und Wartung aus einer Hand. Jetzt eine unverbindliche Offerte anfordern. Jetzt prüfen.', block_type: meta, meta_kind: description, expect: fail, note: 156 characters }
+      - { target: 'Kreiselpumpen für Industrie und Wasserwirtschaft: Beratung, Lieferung, Inbetriebnahme und Wartung aus einer Hand. Fordern Sie jetzt eine unverbindliche Offerte an und profitieren Sie von unserer langjährigen Erfahrung.', block_type: meta, meta_kind: description, expect: fail }
+
+  - id: SEO-SLUG-01
+    type: slug
+    applies_to: [meta]
+    meta_kinds: [slug]
+    severity: major
+    autofix: true
+    message: A URL slug must be lowercase, hyphenated ASCII (a-z, 0-9) with umlauts transliterated (ä→ae, ö→oe, ü→ue, ß→ss) in the German locales.
+    fix: Apply the slug rules of the locale.
+    tests:
+      - { target: 'kreiselpumpen-fuer-die-industrie', block_type: meta, meta_kind: slug, expect: pass }
+      - { target: 'Kreiselpumpen für die Industrie', block_type: meta, meta_kind: slug, expect: fail, fixed: 'kreiselpumpen-fuer-die-industrie' }
+      - { target: 'kreiselpumpen--industrie', block_type: meta, meta_kind: slug, expect: fail, fixed: 'kreiselpumpen-industrie' }
+      - { target: 'pompe_centrifughe', block_type: meta, meta_kind: slug, expect: fail, fixed: 'pompe-centrifughe' }

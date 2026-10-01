@@ -1,0 +1,42 @@
+{
+  "title": "Golden example — nl-NL → de-CH, LOCALIZATION stage (Swiss vocabulary applied, unconfirmed market claim neutralised)",
+  "glossary_shown": [
+    "GLOSS-0048 vrijblijvende offerte → unverbindliche Offerte (de-CH)",
+    "GLOSS-0049 werkdag → Arbeitstag (de-CH)"
+  ],
+  "input": {
+    "stage": "localization",
+    "source_locale": "nl-NL",
+    "target_locale": "de-CH",
+    "operation": "TRANSLATE_LOCALIZE",
+    "segments": [
+      {
+        "segment_id": "p-003",
+        "block_type": "paragraph",
+        "meta_kind": null,
+        "source_text": "Onze centrifugaalpompen leveren een debiet tot 450 m³/h bij een opvoerhoogte van 80 meter. Vraag vandaag nog een vrijblijvende offerte aan — levering binnen 5 werkdagen in heel Nederland.",
+        "input_text": "Unsere Kreiselpumpen fördern bis zu 450 m³/h bei einer Förderhöhe von 80 Metern. Fordern Sie noch heute ein unverbindliches Angebot an – Lieferung innerhalb von 5 Werktagen in den gesamten Niederlanden.",
+        "glossary_term_ids": ["GLOSS-0048", "GLOSS-0049"],
+        "market_claims": [
+          { "source_phrase": "in heel Nederland", "action": "NEUTRALIZE", "replacement_phrase": null }
+        ]
+      }
+    ]
+  },
+  "thinking": "Locale rules that apply: DECH-LEX-OFFERTE (Angebot → Offerte, fix the article), DECH-LEX-INNERT (innerhalb von + time → innert), Arbeitstage instead of Werktage. No ß in the text. The claim 'in heel Nederland' has action NEUTRALIZE and market_facts has no de-CH delivery fact, so I remove the geographic scope and ask for human review. Numbers untouched.",
+  "output": {
+    "results": [
+      {
+        "segment_id": "p-003",
+        "target_locale": "de-CH",
+        "localized_text": "Unsere Kreiselpumpen fördern bis zu 450 m³/h bei einer Förderhöhe von 80 Metern. Fordern Sie noch heute eine unverbindliche Offerte an – Lieferung innert 5 Arbeitstagen.",
+        "changes": [
+          { "from": "ein unverbindliches Angebot", "to": "eine unverbindliche Offerte", "rule": "DECH-LEX-OFFERTE", "reason": "[EVIDENCE: DECH-LEX-OFFERTE] Offerte is the standard Swiss B2B term for a quotation." },
+          { "from": "innerhalb von 5 Werktagen", "to": "innert 5 Arbeitstagen", "rule": "DECH-LEX-INNERT", "reason": "[EVIDENCE: DECH-LEX-INNERT] Swiss preposition; Arbeitstage is the common Swiss usage." },
+          { "from": "in den gesamten Niederlanden", "to": "", "rule": "INTEGRITY-MARKET-CLAIM", "reason": "[EVIDENCE: market_facts.yaml has no de-CH.delivery] Geographic claim neutralized; delivery scope for Switzerland unconfirmed." }
+        ],
+        "requires_human_review": true
+      }
+    ]
+  }
+}

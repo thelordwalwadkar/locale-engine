@@ -1,0 +1,122 @@
+# en-GB — British English for UK B2B buyers (FROZEN in Phase 1)
+locale: en-GB
+language: en
+region: GB
+display_name: English (United Kingdom)
+audience_label: UK
+description: >-
+  British English for UK industrial and facilities buyers: understated, precise and metric-first, with British spelling,
+  DD/MM/YYYY dates and no American superlatives.
+hreflang: en-GB
+
+formatting:
+  number: { decimal: '.', thousands: ',', accepted_thousands: [','], dash_decimal: drop, example: '1,234.56' }
+  currency: { local_code: GBP, local_symbol: '£', position: before, space: none, accept_alternate_position: false, example: '£1,234.56' }
+  date: { numeric: 'DD/MM/YYYY', zero_pad: true, textual_example: '30 September 2026' }
+  quotes: { open: '‘', close: '’', open_inner: '“', close_inner: '”' }
+
+slug:
+  transliterate: {}
+  strip_diacritics: true
+
+seo:
+  title_max: 60
+  meta_description_max: 155
+
+prompt_notes:
+  - 'British spelling with -ise preferred: organisation, optimise; aluminium, litre, metre, programme (non-software).'
+  - 'Dates DD/MM/YYYY or "30 September 2026". Metric units stay metric; never convert to imperial.'
+  - 'Tone is understated: state facts and figures, avoid American superlatives ("awesome", "best-in-class", "world-class").'
+  - 'Amounts stay in the source currency unless market_facts.yaml supplies GBP pricing; never convert amounts yourself.'
+
+rules:
+  - id: ENGB-SPELL-01
+    type: lexicon
+    lexicon_ref: en_uk_spelling
+    severity: minor
+    autofix: true
+    message: British spelling is required for en-GB (-ise preferred, colour, metre, litre, aluminium).
+    fix: Use the British spelling.
+    tests:
+      - { target: 'We standardize the color of the aluminum housing.', expect: fail, fixed: 'We standardise the colour of the aluminium housing.' }
+      - { target: 'We standardise the colour of the aluminium housing.', expect: pass }
+      - { target: 'Capacity is 500 liters per minute.', expect: fail, fixed: 'Capacity is 500 litres per minute.' }
+      - { target: 'The vapor pressure is low.', expect: fail, fixed: 'The vapour pressure is low.' }
+
+  - id: ENGB-TONE-01
+    type: lexicon
+    severity: minor
+    repair_trigger: false
+    terms:
+      - { pattern: '\bawesome\b' }
+      - { pattern: '\bbest-in-class\b' }
+      - { pattern: '\bworld-class\b' }
+      - { pattern: '\bgame-chang(?:er|ing)\b' }
+      - { pattern: '\bunbeatable\b' }
+      - { pattern: '\bsecond to none\b' }
+      - { pattern: '\bmind-blowing\b' }
+      - { pattern: '\bincredible\b' }
+      - { pattern: '\bamazing\b' }
+      - { pattern: '\brevolutionary\b' }
+    message: UK B2B copy is understated; American superlatives read as hype and lower trust.
+    fix: Rephrase with a concrete fact or figure instead of the superlative.
+    tests:
+      - { target: 'Our awesome best-in-class pumps.', expect: fail }
+      - { target: 'Our pumps reach 82 % efficiency.', expect: pass }
+
+  - id: ENGB-UNIT-01
+    type: conditional
+    when_source: '[\s\S]'
+    unless_source: '\b(?:gpm|psi|gallons?|inch(?:es)?|feet|foot|fahrenheit)\b|°F'
+    target_forbid: ['\b(?:gpm|psi|gallons?|inch(?:es)?|feet|foot|fahrenheit)\b', '°F']
+    severity: minor
+    repair_trigger: false
+    message: Metric units stay metric for UK industrial buyers; imperial conversions were not requested.
+    fix: Restore the metric value from the source.
+    tests:
+      - { source: 'Druk tot 16 bar.', target: 'Pressure up to 232 psi.', expect: fail }
+      - { source: 'Druk tot 16 bar.', target: 'Pressure up to 16 bar.', expect: pass }
+
+  - id: ENGB-NUM-01
+    type: format
+    aspect: number
+    severity: major
+    message: 'en-GB numbers use a comma for thousands and a full stop for decimals: 1,234.56.'
+    fix: Write numbers as 1,234.56.
+    tests:
+      - { target: 'Flow up to 1,250.5 m³/h.', expect: pass }
+      - { target: 'Flow up to 1.250,5 m³/h.', expect: fail }
+
+  - id: ENGB-CUR-01
+    type: format
+    aspect: currency
+    severity: major
+    message: 'en-GB amounts put the symbol before the number without a space: £1,234.56 (a retained euro amount reads €1,234.56).'
+    fix: Write £1,234.56 or €1,234.56.
+    tests:
+      - { target: 'From £1,250.00 excl. VAT.', expect: pass }
+      - { target: 'From €1,250.00 excl. VAT.', expect: pass }
+      - { target: 'From 1.250,00 € excl. VAT.', expect: fail }
+
+  - id: ENGB-DATE-01
+    type: format
+    aspect: date
+    severity: minor
+    message: 'en-GB numeric dates are DD/MM/YYYY; written dates read "30 September 2026".'
+    fix: Write 30/09/2026 or 30 September 2026.
+    tests:
+      - { target: 'Available from 30/09/2026.', expect: pass }
+      - { target: 'Available from 30-09-2026.', expect: fail }
+
+market_checks:
+  - id: ENGB-MARKET-CUR
+    text: Quote UK prices in GBP (ex VAT) where the client prices for the UK; otherwise state clearly that amounts are in EUR.
+  - id: ENGB-MARKET-MARKING
+    text: If products are sold into Great Britain, UKCA or CE marking references may be expected; confirm which marking applies before quoting one.
+    verify_with_counsel: true
+  - id: ENGB-MARKET-LEGAL
+    text: UK business websites normally show the registered company name, company number and registered office, and a UK GDPR privacy notice; a translation alone is not sufficient.
+    applies: legal_page
+    verify_with_counsel: true
+
+edge_exemplars: [edge_variant_divergence, edge_same_language, edge_mixed_language, edge_legal_page]

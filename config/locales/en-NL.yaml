@@ -1,0 +1,177 @@
+# en-NL — English for a Netherlands-based / international B2B audience (FROZEN in Phase 1)
+locale: en-NL
+language: en
+region: NL
+display_name: English (Netherlands)
+audience_label: Dutch
+description: >-
+  British-spelling English for buyers based in the Netherlands or reading Dutch-market pages in English. Readers often use
+  English as a second language and know Dutch business terms (BTW, KvK), so the copy is plain, exact and free of idiom and hype.
+hreflang: en-NL
+
+formatting:
+  number: { decimal: '.', thousands: ',', accepted_thousands: [','], dash_decimal: drop, example: '1,234.56' }
+  currency: { local_code: EUR, local_symbol: '€', position: before, space: none, accept_alternate_position: false, example: '€1,234.56' }
+  date: { numeric: 'DD/MM/YYYY', zero_pad: true, textual_example: '30 September 2026' }
+  quotes: { open: '“', close: '”', open_inner: '‘', close_inner: '’' }
+
+slug:
+  transliterate: {}
+  strip_diacritics: true
+
+seo:
+  title_max: 60
+  meta_description_max: 155
+
+prompt_notes:
+  - 'Write British English: -ise, colour, metre, aluminium, litre.'
+  - 'Keep Dutch business references: KvK stays KvK; BTW becomes "VAT (BTW)" on its first mention, then "VAT".'
+  - 'Readers are international buyers: short sentences, no idioms, no marketing superlatives.'
+  - 'Dates as "30 September 2026" or "30/09/2026". Keep phone numbers exactly as written in the source.'
+
+rules:
+  - id: ENNL-SPELL-01
+    type: lexicon
+    lexicon_ref: en_uk_spelling
+    severity: minor
+    autofix: true
+    message: British spelling is the baseline for en-NL (-ise, colour, metre, litre, aluminium).
+    fix: Use the British spelling.
+    tests:
+      - { target: 'We optimize the color of the casing.', expect: fail, fixed: 'We optimise the colour of the casing.' }
+      - { target: 'We optimise the colour of the casing.', expect: pass }
+      - { target: 'The pump lifts water 80 meters high.', expect: fail, fixed: 'The pump lifts water 80 metres high.' }
+      - { target: 'A flow meter is included.', expect: pass, note: the measuring device keeps "meter" }
+
+  - id: ENNL-FF-ACTUEEL
+    type: conditional
+    when_source: '\bactue[a-z]*\b'
+    target_forbid: ['\bactual(?:ly)?\b']
+    prefer: current
+    severity: major
+    message: 'False friend: Dutch "actueel" means "current", never "actual".'
+    fix: Use "current" (or "up-to-date").
+    tests:
+      - { source: 'Bekijk de actuele prijzen.', target: 'See the actual prices.', expect: fail }
+      - { source: 'Bekijk de actuele prijzen.', target: 'See the current prices.', expect: pass }
+
+  - id: ENNL-FF-EVENTUEEL
+    type: conditional
+    when_source: '\beventue[a-z]*\b'
+    target_forbid: ['\beventual(?:ly)?\b']
+    severity: major
+    message: 'False friend: Dutch "eventueel" means "possibly / if required / any", never "eventual".'
+    fix: Use "possibly", "if required", "where applicable" or "any".
+    tests:
+      - { source: 'Eventuele kosten zijn extra.', target: 'Eventual costs are extra.', expect: fail }
+      - { source: 'Eventuele kosten zijn extra.', target: 'Any costs are extra.', expect: pass }
+
+  - id: ENNL-FF-OFFERTE
+    type: conditional
+    when_source: '\boffertes?\b'
+    target_forbid: ['\boffers?\b']
+    prefer: quotation
+    severity: major
+    message: 'False friend: Dutch "offerte" is a "quotation" or "quote", never an "offer".'
+    fix: Use "quotation" or "quote".
+    tests:
+      - { source: 'Vraag een offerte aan.', target: 'Request an offer.', expect: fail }
+      - { source: 'Vraag een offerte aan.', target: 'Request a quotation.', expect: pass }
+
+  - id: ENNL-FF-CONTROLEREN
+    type: conditional
+    when_source: '\b(?:ge)?controle(?:er|ert|ren|erd|erde|s)?\b'
+    unless_source: '\bcontrole\s+over\b'
+    target_forbid: ['\bcontrol(?:s|led|ling)?\b']
+    prefer: check
+    severity: major
+    message: 'False friend: Dutch "controleren" means "check" or "inspect", never "control".'
+    fix: Use "check" or "inspect".
+    tests:
+      - { source: 'Wij controleren de pomp.', target: 'We control the pump.', expect: fail }
+      - { source: 'Wij controleren de pomp.', target: 'We check the pump.', expect: pass }
+      - { source: 'U heeft volledige controle over het proces.', target: 'You have full control over the process.', expect: pass, note: '"controle over" really is control' }
+
+  - id: ENNL-FF-CONCURRENT
+    type: conditional
+    when_source: '\bconcurrent(?:en)?\b'
+    unless_source: '\bconcurrerende?\b'
+    target_forbid: ['\bconcurrents?\b']
+    severity: major
+    message: 'False friend: Dutch "concurrent" is a "competitor", not "concurrent".'
+    fix: Use "competitor(s)".
+    tests:
+      - { source: 'Onze concurrenten zijn duurder.', target: 'Our concurrents are more expensive.', expect: fail }
+      - { source: 'Onze concurrenten zijn duurder.', target: 'Our competitors are more expensive.', expect: pass }
+
+  - id: ENNL-BTW-01
+    type: first_mention
+    when_source: '\bBTW\b'
+    term: '\bVAT\b'
+    required_form: '\bVAT \(BTW\)'
+    prefer: 'VAT (BTW)'
+    severity: minor
+    autofix: true
+    repair_trigger: true
+    message: 'Dutch BTW is shown as "VAT (BTW)" on its first mention so Dutch-speaking readers recognise it.'
+    fix: Write "VAT (BTW)" at the first mention.
+    tests:
+      - { source: 'Prijzen excl. BTW. BTW is 21%.', target: 'Prices excl. VAT (BTW). VAT is 21%.', expect: pass }
+      - { source: 'Prijzen excl. BTW. BTW is 21%.', target: 'Prices excl. VAT. VAT is 21%.', expect: fail, fixed: 'Prices excl. VAT (BTW). VAT is 21%.' }
+
+  - id: ENNL-NUM-01
+    type: format
+    aspect: number
+    severity: major
+    message: 'en-NL numbers use a comma for thousands and a full stop for decimals: 1,234.56.'
+    fix: Write numbers as 1,234.56.
+    tests:
+      - { target: 'Flow up to 1,250.5 m³/h.', expect: pass }
+      - { target: 'Flow up to 1.250,5 m³/h.', expect: fail }
+
+  - id: ENNL-CUR-01
+    type: format
+    aspect: currency
+    severity: major
+    message: 'en-NL amounts put the symbol before the number without a space: €1,234.56.'
+    fix: Write €1,234.56.
+    tests:
+      - { target: 'The pump costs €1,250.00 excl. VAT.', expect: pass }
+      - { target: 'The pump costs 1.250,00 € excl. VAT.', expect: fail }
+
+  - id: ENNL-DATE-01
+    type: format
+    aspect: date
+    severity: minor
+    message: 'en-NL numeric dates are DD/MM/YYYY; written dates read "30 September 2026".'
+    fix: Write 30/09/2026 or 30 September 2026.
+    tests:
+      - { target: 'Available from 30/09/2026.', expect: pass }
+      - { target: 'Available from 30 September 2026.', expect: pass }
+      - { target: 'Available from 30.09.2026.', expect: fail }
+
+  - id: ENNL-PHONE-01
+    type: lexicon
+    severity: minor
+    hypothesis: true
+    repair_trigger: false
+    terms:
+      - { pattern: '(?<![\d+])0(?:[\s.-]?\d){9}(?!\d)', note: Dutch national format }
+    message: 'Dutch phone numbers in English copy are normally shown in international format (+31 …, without the leading 0). Numbers are business entities, so this is flagged for a human decision, not rewritten.'
+    fix: Confirm the international format with the client.
+    tests:
+      - { target: 'Call us on 020 123 4567.', expect: fail }
+      - { target: 'Call us on +31 20 123 4567.', expect: pass }
+
+market_checks:
+  - id: ENNL-MARKET-PHONE
+    text: Show Dutch phone numbers in international format (+31 …) and state opening hours in CET/CEST for international buyers.
+  - id: ENNL-MARKET-REG
+    text: Dutch companies normally show their KvK (Chamber of Commerce) number, VAT number (BTW-id) and registered address in the footer of commercial pages.
+    verify_with_counsel: true
+  - id: ENNL-MARKET-LEGAL
+    text: Legal pages for the Dutch market need a privacy statement that meets the GDPR (AVG) and identifying company details; a translation alone is not sufficient.
+    applies: legal_page
+    verify_with_counsel: true
+
+edge_exemplars: [edge_false_friend, edge_variant_divergence, edge_same_language, edge_mixed_language, edge_legal_page]

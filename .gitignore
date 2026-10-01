@@ -1,0 +1,11 @@
+node_modules/
+dist/
+output/
+coverage/
+.env
+.env.*
+!.env.example
+*.log
+.vitest-cache/
+.tmp/
+Thumbs.db

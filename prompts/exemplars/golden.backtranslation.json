@@ -1,0 +1,25 @@
+{
+  "title": "Golden example — back-translation of the final de-CH text into English (literal mirror, for drift detection)",
+  "glossary_shown": [],
+  "input": {
+    "stage": "backtranslation",
+    "target_locale": "de-CH",
+    "back_translation_language": "en",
+    "segments": [
+      {
+        "segment_id": "p-003",
+        "text": "Unsere Kreiselpumpen fördern bis zu 450 m³/h bei einer Förderhöhe von 80 Metern. Fordern Sie noch heute eine unverbindliche Offerte an – Lieferung innert 5 Arbeitstagen."
+      }
+    ]
+  },
+  "thinking": "Translate literally into English. Keep 450 m³/h and 80. Do not improve the wording and do not add the removed country scope.",
+  "output": {
+    "results": [
+      {
+        "segment_id": "p-003",
+        "target_locale": "de-CH",
+        "back_translation": "Our centrifugal pumps deliver up to 450 m³/h at a head of 80 metres. Request a non-binding quotation today – delivery within 5 working days."
+      }
+    ]
+  }
+}

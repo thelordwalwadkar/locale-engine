@@ -1,0 +1,31 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, node: 22 }
+          - { os: ubuntu-latest, node: 24 }
+          - { os: windows-latest, node: 24 }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm run verify
+      - name: Offline demo (mock provider, no keys)
+        run: >
+          node dist/interfaces/cli.js run --input tests/fixtures/ingest/pumps-nl.html --targets all
+          --provider language_detection=mock --provider translation=mock --provider localization=mock
+          --provider validation=mock --provider backtranslation=mock --provider repair=mock --out demo-out

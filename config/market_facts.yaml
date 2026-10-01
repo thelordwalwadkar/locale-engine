@@ -1,0 +1,36 @@
+# =====================================================================================================================
+# market_facts.yaml — per-market business facts (spec §3 {{MARKET_FACTS_PATH}}).
+#
+# EMPTY ON PURPOSE. The engine never invents business facts. While a market has no entry:
+#   - a geographic claim in the source ("delivery across the Netherlands") is neutralised for that market and the
+#     segment is sent to HUMAN_REVIEW (rule INTEGRITY-MARKET-CLAIM);
+#   - prices are kept in their source currency and flagged (rule CURRENCY-POLICY-01);
+#   - no phone number, lead time or certification is added.
+#
+# Top-level keys are locale codes: nl-NL, en-NL, en-GB, de-DE, de-AT, de-CH, it-IT. Allowed fields per locale:
+#
+#   delivery:       target-LANGUAGE phrase that replaces a geographic scope claim. Presence = "the fact is confirmed".
+#   lead_time:      target-language phrase, e.g. "innert 5 Arbeitstagen".
+#   phone:          contact number for that market, exactly as it should appear.
+#   email:          contact address for that market.
+#   currency:       ISO code the business really prices in for that market (EUR, GBP, CHF).
+#   certifications: list of certifications the business genuinely holds (SVGW, ÖVGW, ATEX, ...). Only these may be named.
+#   notes:          free text for reviewers.
+#
+# Example (uncomment and adapt; every value below is a placeholder, not a fact about any real company):
+#
+# de-CH:
+#   delivery: "in die ganze Schweiz"
+#   lead_time: "innert 5 Arbeitstagen"
+#   phone: "+41 00 000 00 00"
+#   currency: CHF
+#   certifications: [SVGW]
+#   notes: "Confirmed by the sales lead on <date>."
+#
+# en-GB:
+#   delivery: "across the United Kingdom"
+#   currency: GBP
+#
+# it-IT:
+#   delivery: "in tutta Italia"
+{}

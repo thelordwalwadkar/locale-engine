@@ -1,0 +1,55 @@
+{
+  "title": "Golden example — nl-NL → de-CH, VALIDATION stage (LLM judge). The system adds the deterministic checks, the score and the verdict; you return scores, MQM errors, confidence and recommendations.",
+  "glossary_shown": [],
+  "input": {
+    "stage": "validation",
+    "source_locale": "nl-NL",
+    "target_locale": "de-CH",
+    "operation": "TRANSLATE_LOCALIZE",
+    "segments": [
+      {
+        "segment_id": "p-003",
+        "block_type": "paragraph",
+        "meta_kind": null,
+        "source_text": "Onze centrifugaalpompen leveren een debiet tot 450 m³/h bij een opvoerhoogte van 80 meter. Vraag vandaag nog een vrijblijvende offerte aan — levering binnen 5 werkdagen in heel Nederland.",
+        "target_text": "Unsere Kreiselpumpen fördern bis zu 450 m³/h bei einer Förderhöhe von 80 Metern. Fordern Sie noch heute eine unverbindliche Offerte an – Lieferung innert 5 Arbeitstagen.",
+        "changes": [
+          { "from": "ein unverbindliches Angebot", "to": "eine unverbindliche Offerte", "rule": "DECH-LEX-OFFERTE" },
+          { "from": "innerhalb von 5 Werktagen", "to": "innert 5 Arbeitstagen", "rule": "DECH-LEX-INNERT" },
+          { "from": "in den gesamten Niederlanden", "to": "", "rule": "INTEGRITY-MARKET-CLAIM" }
+        ],
+        "deterministic_findings": [],
+        "back_translation": "Our centrifugal pumps deliver up to 450 m³/h at a head of 80 metres. Request a non-binding quotation today – delivery within 5 working days.",
+        "glossary_term_ids": ["GLOSS-0012", "GLOSS-0019", "GLOSS-0048", "GLOSS-0049"],
+        "market_claims": [
+          { "source_phrase": "in heel Nederland", "action": "NEUTRALIZE", "replacement_phrase": null }
+        ]
+      }
+    ]
+  },
+  "thinking": "Accuracy: all statements kept; the only difference is the deliberately removed country scope, which must be reported once as accuracy/omission (major) with INTEGRITY-MARKET-CLAIM. Fluency and Swiss conventions are right (Offerte, innert, Arbeitstage, no ß). The deterministic findings list is empty, so I add nothing for formats or entities.",
+  "output": {
+    "results": [
+      {
+        "segment_id": "p-003",
+        "target_locale": "de-CH",
+        "scores": { "accuracy": 95, "fluency": 98, "terminology": 100, "locale_conventions": 100, "style_brand": 95 },
+        "mqm_errors": [
+          {
+            "category": "accuracy/omission",
+            "severity": "major",
+            "source_span": "in heel Nederland",
+            "target_span": "",
+            "explanation": "[EVIDENCE: INTEGRITY-MARKET-CLAIM] Deliberate neutralization; business must confirm Swiss delivery scope and lead time.",
+            "suggested_fix": "Add de-CH.delivery to market_facts.yaml, e.g. 'in die ganze Schweiz' with confirmed lead time."
+          }
+        ],
+        "confidence": 0.92,
+        "localization_recommendations": [
+          "[HYPOTHESIS] Show prices in CHF and add a Swiss contact number if the client serves CH directly.",
+          "[HYPOTHESIS] Reference SVGW certification if the pumps are used in potable-water applications and certification exists — verify."
+        ]
+      }
+    ]
+  }
+}

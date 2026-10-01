@@ -1,0 +1,155 @@
+# de-AT — German for Austria (FROZEN in Phase 1). Produced directly from the source, never converted from another German variant.
+locale: de-AT
+language: de
+region: AT
+display_name: German (Austria)
+audience_label: Austrian
+description: >-
+  Standard German as written in Austria for industrial and municipal buyers: formal Sie, ß as in Germany, but with Austrian
+  vocabulary such as "Jänner". Numbers, dates and currency follow German conventions.
+hreflang: de-AT
+
+formatting:
+  number: { decimal: ',', thousands: '.', accepted_thousands: ['.'], dash_decimal: keep, example: '1.234,56' }
+  currency: { local_code: EUR, local_symbol: '€', position: after, space: nbsp, accept_alternate_position: true, example: "1.234,56 €" }
+  date: { numeric: 'DD.MM.YYYY', zero_pad: true, textual_example: '30. September 2026' }
+  quotes: { open: '„', close: '“', open_inner: '‚', close_inner: '‘' }
+
+slug:
+  transliterate: { ä: ae, ö: oe, ü: ue, ß: ss }
+  strip_diacritics: true
+
+seo:
+  title_max: 60
+  meta_description_max: 155
+
+prompt_notes:
+  - 'Formal Sie / Ihr. Orthography as in Germany: ß is used (Größe, Straße).'
+  - 'Write "Jänner" (never "Januar"). "heuer" (this year) is acceptable in informal copy but not needed in B2B copy.'
+  - 'Numbers 1.234,56 and dates 30.09.2026 follow German conventions; currency EUR (symbol after the number is the default, before is tolerated).'
+  - 'Vocabulary: Angebot (not Offerte), innerhalb von (not innert).'
+
+rules:
+  - id: DEAT-MONTH-01
+    type: lexicon
+    terms:
+      - { pattern: '\bJanuar\b', prefer: Jänner }
+    severity: major
+    autofix: true
+    message: 'Austrian German writes "Jänner", not "Januar".'
+    fix: Use "Jänner".
+    tests:
+      - { target: 'Verfügbar ab Januar 2027.', expect: fail, fixed: 'Verfügbar ab Jänner 2027.' }
+      - { target: 'Verfügbar ab Jänner 2027.', expect: pass }
+      - { target: 'Ab dem 1. Januar 2027 lieferbar.', expect: fail, fixed: 'Ab dem 1. Jänner 2027 lieferbar.' }
+
+  - id: DEAT-SZ-01
+    type: lexicon
+    lexicon_ref: de_eszett
+    severity: major
+    autofix: true
+    message: Austrian German uses ß where current orthography requires it; "ss" spellings such as Grösse or gross are Swiss.
+    fix: Replace the "ss" spelling with ß.
+    tests:
+      - { target: 'Die Grösse der Pumpe ist gross.', expect: fail, fixed: 'Die Größe der Pumpe ist groß.' }
+      - { target: 'Die Größe der Pumpe ist groß.', expect: pass }
+
+  - id: DEAT-QUOTE-01
+    type: lexicon
+    lexicon_ref: de_quotes
+    severity: minor
+    autofix: true
+    message: 'Austrian business copy uses low-high quotation marks: „…“.'
+    fix: Replace the quotation marks with „…“.
+    tests:
+      - { target: 'Das Modell "Flygt" ist robust.', expect: fail, fixed: 'Das Modell „Flygt“ ist robust.' }
+      - { target: 'Das Modell „Flygt“ ist robust.', expect: pass }
+
+  - id: DEAT-LEX-OFFERTE
+    type: lexicon
+    terms:
+      - { pattern: '\b(?:(?:ein\w*|die|der|den|dem|ihr\w*|unser\w*)\s+)?(?:\p{L}+\s+)?Offerten?\b', prefer: Angebot }
+    severity: minor
+    message: '"Offerte" is Swiss usage; in Austria a quotation is a "Angebot".'
+    fix: 'Use "Angebot" and adjust article and adjective endings.'
+    tests:
+      - { target: 'Fordern Sie eine unverbindliche Offerte an.', expect: fail }
+      - { target: 'Fordern Sie ein unverbindliches Angebot an.', expect: pass }
+
+  - id: DEAT-LEX-INNERT
+    type: lexicon
+    terms:
+      - { pattern: '\binnert\b', prefer: 'innerhalb von' }
+    severity: minor
+    autofix: true
+    message: '"innert" is a Swiss preposition; in Austria use "innerhalb von" (time).'
+    fix: Use "innerhalb von".
+    tests:
+      - { target: 'Lieferung innert 5 Werktagen.', expect: fail, fixed: 'Lieferung innerhalb von 5 Werktagen.' }
+      - { target: 'Lieferung innerhalb von 5 Werktagen.', expect: pass }
+
+  - id: DEAT-FORMAL-01
+    type: lexicon
+    lexicon_ref: de_informal_du
+    severity: major
+    message: B2B copy addresses the reader formally (Sie / Ihr); informal du-forms are not acceptable.
+    fix: Rewrite the sentence with Sie / Ihr.
+    tests:
+      - { target: 'Hast du Fragen? Dann ruf uns an.', expect: fail }
+      - { target: 'Haben Sie Fragen? Dann rufen Sie uns an.', expect: pass }
+
+  - id: DEAT-NUM-01
+    type: format
+    aspect: number
+    severity: major
+    message: 'Austrian numbers use a full stop for thousands and a comma for decimals: 1.234,56.'
+    fix: Write numbers as 1.234,56.
+    tests:
+      - { target: 'Förderstrom bis 1.250,5 m³/h.', expect: pass }
+      - { target: 'Förderstrom bis 1,250.5 m³/h.', expect: fail }
+
+  - id: DEAT-CUR-01
+    type: format
+    aspect: currency
+    severity: major
+    message: 'Austrian amounts are written 1.234,56 € (symbol before the number is tolerated: € 1.234,56).'
+    fix: Write 1.234,56 €.
+    tests:
+      - { target: 'Ab 1.250,00 € zzgl. MwSt.', expect: pass }
+      - { target: 'Ab € 1.250,00 zzgl. MwSt.', expect: pass }
+      - { target: 'Ab 1,250.00 € zzgl. MwSt.', expect: fail }
+
+  - id: DEAT-DATE-01
+    type: format
+    aspect: date
+    severity: minor
+    message: 'Austrian numeric dates are DD.MM.YYYY.'
+    fix: Write 30.09.2026.
+    tests:
+      - { target: 'Verfügbar ab 30.09.2026.', expect: pass }
+      - { target: 'Verfügbar ab 30/09/2026.', expect: fail }
+
+  - id: DEAT-DATE-02
+    type: lexicon
+    lexicon_ref: de_date_period
+    severity: minor
+    autofix: true
+    message: 'Written German dates have a period after the day: 30. September 2026.'
+    fix: Insert the period after the day number.
+    tests:
+      - { target: 'Verfügbar ab 30 September 2026.', expect: fail, fixed: 'Verfügbar ab 30. September 2026.' }
+      - { target: 'Verfügbar ab 30. September 2026.', expect: pass }
+
+market_checks:
+  - id: DEAT-MARKET-IMPRESSUM
+    text: Austrian business websites need an Impressum / Offenlegung (E-Commerce-Gesetz and Mediengesetz); check that the Austrian pages link to one.
+    verify_with_counsel: true
+  - id: DEAT-MARKET-OVGW
+    text: Reference ÖVGW certification only for water or gas equipment that genuinely holds it.
+    verify_with_counsel: true
+  - id: DEAT-MARKET-LEGAL
+    text: Austrian legal pages (Impressum, Datenschutzerklärung, AGB) must be reviewed by counsel; translation alone does not make them compliant.
+    applies: legal_page
+    verify_with_counsel: true
+
+edge_exemplars: [edge_de_at_month, edge_mixed_language, edge_legal_page]

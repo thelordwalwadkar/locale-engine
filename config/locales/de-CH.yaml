@@ -1,0 +1,186 @@
+# de-CH — German for Switzerland (FROZEN in Phase 1). Produced directly from the source, never converted from another German variant.
+locale: de-CH
+language: de
+region: CH
+display_name: German (Switzerland)
+audience_label: Swiss
+description: >-
+  Swiss Standard German for industrial and municipal buyers: never ß (always ss), guillemets «…», Swiss number format
+  1'234.50, formal Sie and Swiss business vocabulary (Offerte, innert, Arbeitstage).
+hreflang: de-CH
+
+formatting:
+  number: { decimal: '.', thousands: "'", accepted_thousands: ["'", '’', ' ', " ", " "], dash_decimal: keep, example: "1'234.50" }
+  currency: { local_code: CHF, local_symbol: 'CHF', position: before, space: space, accept_alternate_position: false, example: "CHF 1'234.50" }
+  date: { numeric: 'DD.MM.YYYY', zero_pad: true, textual_example: '30. September 2026' }
+  quotes: { open: '«', close: '»', open_inner: '‹', close_inner: '›' }
+
+slug:
+  transliterate: { ä: ae, ö: oe, ü: ue, ß: ss }
+  strip_diacritics: true
+
+seo:
+  title_max: 60
+  meta_description_max: 155
+
+prompt_notes:
+  - 'NEVER write ß. Always ss: Grösse, Strasse, gross, Massnahme, Verschleissteil.'
+  - 'Quotation marks are guillemets «…» (inner ‹…›). Numbers 1''234.50 (apostrophe) or 1 234.50; currency "CHF 1''234.50" — a retained euro amount reads "€ 1''234.50".'
+  - 'Swiss business vocabulary: Offerte (not Angebot) for a quotation, innert (not innerhalb von) for time limits, Arbeitstage (not Werktage), Pikettdienst for on-call service, parkieren, Velo.'
+  - 'Formal Sie / Ihr. The copy is for Swiss buyers: do not name other countries as delivery areas unless market_facts.yaml says so.'
+  - 'The market is multilingual (French- and Italian-speaking regions); do not assume German-only readers in any generic claim.'
+
+rules:
+  - id: DECH-SZ-01
+    type: lexicon
+    # case-sensitive: under the default `i` flag /ß/ also matches ẞ (and vice versa), which would pair each letter with the wrong replacement
+    flags: ''
+    terms:
+      - { pattern: 'ß', prefer: ss, preserve_case: false }
+      - { pattern: 'ẞ', prefer: SS, preserve_case: false }
+    severity: critical
+    autofix: true
+    message: 'Swiss Standard German never uses ß; it is always written ss.'
+    fix: Replace every ß with ss (Größe → Grösse).
+    tests:
+      - { target: 'Die Größe beträgt 80 Meter.', expect: fail, fixed: 'Die Grösse beträgt 80 Meter.' }
+      - { target: 'Die Grösse beträgt 80 Meter.', expect: pass }
+      - { target: 'Schließen Sie die Straße.', expect: fail, fixed: 'Schliessen Sie die Strasse.' }
+
+  - id: DECH-QUOTE-01
+    type: lexicon
+    terms:
+      - { pattern: '"([^"\n]{1,300})"', prefer: '«$1»', preserve_case: false }
+      - { pattern: '„([^“”\n]{1,300})[“”]', prefer: '«$1»', preserve_case: false }
+      - { pattern: '“([^”\n]{1,300})”', prefer: '«$1»', preserve_case: false }
+    severity: major
+    autofix: true
+    message: 'Swiss German uses guillemets «…» as quotation marks.'
+    fix: Replace the quotation marks with «…».
+    tests:
+      - { target: 'Das Modell "Flygt" ist robust.', expect: fail, fixed: 'Das Modell «Flygt» ist robust.' }
+      - { target: 'Das Modell „Flygt“ ist robust.', expect: fail, fixed: 'Das Modell «Flygt» ist robust.' }
+      - { target: 'Das Modell «Flygt» ist robust.', expect: pass }
+
+  - id: DECH-NUM-01
+    type: format
+    aspect: number
+    severity: major
+    message: "Swiss numbers use an apostrophe (or a space) for thousands and a full stop for decimals: 1'234.50 or 1 234.50."
+    fix: "Write numbers as 1'234.50."
+    tests:
+      - { target: "Durchfluss bis 1'250.5 m³/h.", expect: pass }
+      - { target: 'Durchfluss bis 1 250.5 m³/h.', expect: pass }
+      - { target: 'Durchfluss bis 1.250,5 m³/h.', expect: fail }
+
+  - id: DECH-CUR-01
+    type: format
+    aspect: currency
+    severity: major
+    message: "Swiss amounts put the currency before the number with a space: CHF 1'234.50. Euro amounts that are retained read € 1'234.50 and are flagged by CURRENCY-POLICY-01."
+    fix: "Write CHF 1'234.50 (or € 1'234.50 for a retained euro amount)."
+    tests:
+      - { target: "Ab CHF 1'250.00 exkl. MWST.", expect: pass }
+      - { target: "Ab € 1'250.00 exkl. MWST.", expect: pass }
+      - { target: 'Ab 1.250,00 € exkl. MWST.', expect: fail }
+
+  - id: DECH-DATE-01
+    type: format
+    aspect: date
+    severity: minor
+    message: 'Swiss numeric dates are DD.MM.YYYY.'
+    fix: Write 30.09.2026.
+    tests:
+      - { target: 'Verfügbar ab 30.09.2026.', expect: pass }
+      - { target: 'Verfügbar ab 30/09/2026.', expect: fail }
+
+  - id: DECH-DATE-02
+    type: lexicon
+    lexicon_ref: de_date_period
+    severity: minor
+    autofix: true
+    message: 'Written German dates have a period after the day: 30. September 2026.'
+    fix: Insert the period after the day number.
+    tests:
+      - { target: 'Verfügbar ab 30 September 2026.', expect: fail, fixed: 'Verfügbar ab 30. September 2026.' }
+      - { target: 'Verfügbar ab 30. September 2026.', expect: pass }
+
+  - id: DECH-LEX-OFFERTE
+    type: conditional
+    when_source: '\boffertes?\b|\bquot(?:ation|e)s?\b'
+    target_forbid: ['\b(?:(?:ein\w*|die|der|den|dem|ihr\w*|unser\w*)\s+)?(?:\p{L}+\s+)?Angebot(?:e|en|es|s)?\b']
+    prefer: Offerte
+    severity: major
+    message: 'In Swiss B2B German a quotation is an "Offerte"; "Angebot" reads as German usage.'
+    fix: 'Use "Offerte" and adjust article and adjective endings (ein Angebot → eine Offerte).'
+    tests:
+      - { source: 'Vraag een vrijblijvende offerte aan.', target: 'Fordern Sie ein unverbindliches Angebot an.', expect: fail }
+      - { source: 'Vraag een vrijblijvende offerte aan.', target: 'Fordern Sie eine unverbindliche Offerte an.', expect: pass }
+      - { source: 'Onze productrange is breed.', target: 'Unser Angebot ist breit.', expect: pass, note: '"Angebot" in the sense of product range is fine' }
+
+  - id: DECH-LEX-INNERT
+    type: lexicon
+    terms:
+      - { pattern: '\binnerhalb\s+(?:von\s+)?(?=(?:\d+|einem|einer|eines|weniger\s+als|maximal)\s*(?:\p{L}+\s+)?(?:Tag|Tage|Tagen|Arbeitstag|Arbeitstage|Arbeitstagen|Werktag|Werktage|Werktagen|Woche|Wochen|Monat|Monate|Monaten|Stunde|Stunden|Jahr|Jahre|Jahren|Minute|Minuten)\b)', prefer: 'innert ' }
+    severity: minor
+    autofix: true
+    message: 'For time limits Swiss German uses "innert" instead of "innerhalb (von)".'
+    fix: Use "innert".
+    tests:
+      - { target: 'Lieferung innerhalb von 5 Arbeitstagen.', expect: fail, fixed: 'Lieferung innert 5 Arbeitstagen.' }
+      - { target: 'Lieferung innert 5 Arbeitstagen.', expect: pass }
+      - { target: 'Die Pumpe läuft innerhalb des Gehäuses.', expect: pass, note: spatial use is unchanged }
+
+  - id: DECH-LEX-ARBEITSTAGE
+    type: lexicon
+    terms:
+      - { pattern: '\bWerktag(e|en|s)?\b', prefer: 'Arbeitstag$1' }
+    severity: minor
+    autofix: true
+    message: 'Swiss B2B copy says "Arbeitstage" where Germany says "Werktage".'
+    fix: Use "Arbeitstage".
+    tests:
+      - { target: 'Lieferung innert 5 Werktagen.', expect: fail, fixed: 'Lieferung innert 5 Arbeitstagen.' }
+      - { target: 'Lieferung innert 5 Arbeitstagen.', expect: pass }
+
+  - id: DECH-LEX-HELV-01
+    type: lexicon
+    terms:
+      - { pattern: '\bparken\b', prefer: parkieren }
+      - { pattern: '\bFahrrad\b', prefer: Velo }
+      - { pattern: '\bFahrräder\b', prefer: Velos }
+      - { pattern: '\bGenehmigung(en)?\b', prefer: 'Bewilligung$1' }
+    severity: minor
+    repair_trigger: false
+    message: 'Swiss usage prefers parkieren, Velo and Bewilligung (for permits).'
+    fix: Use the Swiss term.
+    tests:
+      - { target: 'Bitte parken Sie hier.', expect: fail }
+      - { target: 'Bitte parkieren Sie hier.', expect: pass }
+
+  - id: DECH-FORMAL-01
+    type: lexicon
+    lexicon_ref: de_informal_du
+    severity: major
+    message: B2B copy addresses the reader formally (Sie / Ihr); informal du-forms are not acceptable.
+    fix: Rewrite the sentence with Sie / Ihr.
+    tests:
+      - { target: 'Hast du Fragen? Dann ruf uns an.', expect: fail }
+      - { target: 'Haben Sie Fragen? Dann rufen Sie uns an.', expect: pass }
+
+market_checks:
+  - id: DECH-MARKET-CUR
+    text: Show prices in CHF (excl. MWST) and add a Swiss contact number if the client serves Switzerland directly.
+  - id: DECH-MARKET-SVGW
+    text: Reference SVGW certification if the pumps are used in potable-water applications and the certification exists — verify.
+    verify_with_counsel: true
+  - id: DECH-MARKET-LANG
+    text: Switzerland is multilingual; check whether French- or Italian-language pages are needed for the French- and Italian-speaking regions.
+  - id: DECH-MARKET-MWST
+    text: Swiss VAT is abbreviated MWST (Mehrwertsteuer); use the local form in price notes.
+  - id: DECH-MARKET-LEGAL
+    text: Swiss legal pages (Impressum with identity and contact details, Datenschutzerklärung under the revised Data Protection Act, AGB) must be reviewed by counsel; translation alone does not make them compliant.
+    applies: legal_page
+    verify_with_counsel: true
+
+edge_exemplars: [edge_mixed_language, edge_legal_page]

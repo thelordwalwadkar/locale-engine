@@ -1,0 +1,83 @@
+term_id,category,do_not_translate,nl-NL,en-NL,en-GB,de-DE,de-AT,de-CH,it-IT,notes,skip_after,skip_before
+GLOSS-0001,pump_type,false,dompelpomp,submersible pump,submersible pump,Tauchpumpe,Tauchpumpe,Tauchpumpe,pompa sommergibile|pompe sommergibili|pompa sommersa|pompe sommerse,
+GLOSS-0002,pump_type,false,afvalwaterpomp,wastewater pump,wastewater pump,Abwasserpumpe,Abwasserpumpe,Abwasserpumpe,pompa per acque reflue|pompe per acque reflue,
+GLOSS-0003,pump_type,false,verdringerpomp,positive displacement pump,positive displacement pump,Verdrängerpumpe,Verdrängerpumpe,Verdrängerpumpe,pompa volumetrica|pompe volumetriche,
+GLOSS-0004,pump_type,false,doseerpomp,dosing pump,dosing pump,Dosierpumpe,Dosierpumpe,Dosierpumpe,pompa dosatrice|pompe dosatrici,British usage: dosing pump (American: metering pump)
+GLOSS-0005,pump_type,false,membraanpomp,diaphragm pump,diaphragm pump,Membranpumpe,Membranpumpe,Membranpumpe,pompa a membrana|pompe a membrana,
+GLOSS-0006,pump_type,false,tandwielpomp,gear pump,gear pump,Zahnradpumpe,Zahnradpumpe,Zahnradpumpe,pompa a ingranaggi|pompe a ingranaggi,
+GLOSS-0007,pump_type,false,excentrische schroefpomp,progressive cavity pump,progressive cavity pump,Exzenterschneckenpumpe,Exzenterschneckenpumpe,Exzenterschneckenpumpe,pompa a vite eccentrica|pompe a vite eccentrica|pompa monovite,Also called eccentric screw pump
+GLOSS-0008,pump_type,false,slurrypomp,slurry pump,slurry pump,Schlammpumpe|Feststoffpumpe,Schlammpumpe|Feststoffpumpe,Schlammpumpe|Feststoffpumpe,pompa per fanghi|pompe per fanghi|pompa per slurry,
+GLOSS-0009,pump_type,false,meertrapspomp,multistage pump,multistage pump,mehrstufige Pumpe|Mehrstufenpumpe,mehrstufige Pumpe|Mehrstufenpumpe,mehrstufige Pumpe|Mehrstufenpumpe,pompa multistadio|pompe multistadio,
+GLOSS-0010,pump_type,false,zelfaanzuigende pomp,self-priming pump,self-priming pump,selbstansaugende Pumpe,selbstansaugende Pumpe,selbstansaugende Pumpe,pompa autoadescante|pompe autoadescanti,
+GLOSS-0011,pump_type,false,in-line pomp,in-line pump,in-line pump,Inline-Pumpe,Inline-Pumpe,Inline-Pumpe,pompa in linea|pompe in linea,
+GLOSS-0012,pump_type,false,centrifugaalpomp,centrifugal pump,centrifugal pump,Kreiselpumpe,Kreiselpumpe,Kreiselpumpe,pompa centrifuga|pompe centrifughe,Golden-standard term (spec 5.1)
+GLOSS-0013,system,false,drukverhogingsinstallatie,pressure booster set,pressure booster set,Druckerhöhungsanlage,Druckerhöhungsanlage,Druckerhöhungsanlage,gruppo di pressurizzazione|gruppi di pressurizzazione|gruppo di spinta,
+GLOSS-0014,system,false,roerwerk,mixer|agitator,mixer|agitator,Rührwerk,Rührwerk,Rührwerk,agitatore|agitatori|mixer,
+GLOSS-0015,system,false,pompstation,pumping station,pumping station,Pumpstation|Pumpenanlage,Pumpstation|Pumpenanlage,Pumpwerk|Pumpstation,stazione di pompaggio|stazioni di pompaggio|impianto di pompaggio,
+GLOSS-0016,hydraulics,false,debiet,flow rate|flow|deliver,flow rate|flow|deliver,Förderstrom|Volumenstrom|Fördermenge|fördern|fördert,Förderstrom|Volumenstrom|Fördermenge|fördern|fördert,Förderstrom|Volumenstrom|fördern|fördert,portata|portate|erog,Pump duty point quantity; a verb rendering is fine (golden: fördern bis zu 450 m³/h = delivers up to); Italian: portata
+GLOSS-0017,hydraulics,false,druk,pressure,pressure,Druck,Druck,Druck,pressione|pressioni,Dutch 'druk' also means busy; hint applies to the physical quantity only,"^\s+(?:verkeer|bezet|bezig|agenda|periode)\b","\b(?:erg|zeer|te|zo|heel|best|nogal)\s+$"
+GLOSS-0018,hydraulics,false,toerental|toerentallen,rotational speed|speed,rotational speed|speed,Drehzahl,Drehzahl,Drehzahl,velocità di rotazione|numero di giri,
+GLOSS-0019,hydraulics,false,opvoerhoogte,head|total head,head|total head,Förderhöhe,Förderhöhe,Förderhöhe,prevalenza|prevalenze,Golden-standard term (spec 5.1); never 'height'; Italian: prevalenza
+GLOSS-0020,hydraulics,true,NPSH,NPSH,NPSH,NPSH,NPSH,NPSH,NPSH,Net Positive Suction Head; abbreviation kept in every language
+GLOSS-0021,hydraulics,false,vermogen,power,power,Leistung,Leistung,Leistung,potenza|potenze,
+GLOSS-0022,hydraulics,false,rendement,efficiency,efficiency,Wirkungsgrad,Wirkungsgrad,Wirkungsgrad,rendimento|rendimenti,
+GLOSS-0023,hydraulics,false,pompkarakteristiek|pompkarakteristieken,pump curve|performance curve,pump curve|performance curve,Pumpenkennlinie|Kennlinie,Pumpenkennlinie|Kennlinie,Pumpenkennlinie|Kennlinie,curva caratteristica|curve caratteristiche,
+GLOSS-0024,piping,false,zuigleiding,suction line|suction pipe,suction line|suction pipe,Saugleitung,Saugleitung,Saugleitung,tubazione di aspirazione|tubazioni di aspirazione|linea di aspirazione,
+GLOSS-0025,piping,false,persleiding,discharge line|discharge pipe,discharge line|delivery pipe,Druckleitung,Druckleitung,Druckleitung,tubazione di mandata|tubazioni di mandata|linea di mandata,
+GLOSS-0026,piping,false,terugslagklep|terugslagkleppen,non-return valve|check valve,non-return valve,Rückschlagventil|Rückschlagklappe,Rückschlagventil|Rückschlagklappe,Rückschlagventil|Rückschlagklappe,valvola di ritegno|valvole di ritegno,
+GLOSS-0027,piping,false,afsluiter,shut-off valve|isolation valve,shut-off valve|isolating valve,Absperrarmatur|Absperrventil,Absperrarmatur|Absperrventil,Absperrarmatur|Absperrventil,valvola di intercettazione|valvole di intercettazione,
+GLOSS-0028,piping,false,schuifafsluiter,gate valve,gate valve,Absperrschieber|Schieber,Absperrschieber|Schieber,Absperrschieber|Schieber,valvola a saracinesca|valvole a saracinesca|saracinesca,
+GLOSS-0029,component,false,waaier,impeller,impeller,Laufrad|Laufräder,Laufrad|Laufräder,Laufrad|Laufräder,girante|giranti,
+GLOSS-0030,component,false,pomphuis|pomphuizen,pump casing|pump housing,pump casing|pump housing,Pumpengehäuse,Pumpengehäuse,Pumpengehäuse,corpo pompa|corpi pompa,
+GLOSS-0031,component,false,pompas|pompassen,pump shaft,pump shaft,Pumpenwelle,Pumpenwelle,Pumpenwelle,albero pompa|alberi pompa|albero della pompa,
+GLOSS-0032,component,false,mechanische afdichting,mechanical seal,mechanical seal,Gleitringdichtung,Gleitringdichtung,Gleitringdichtung,tenuta meccanica|tenute meccaniche,
+GLOSS-0033,component,false,lager,bearing,bearing,Lager|Wälzlager,Lager|Wälzlager,Lager|Wälzlager,cuscinetto|cuscinetti,Noun only; Dutch adjective 'lager' means lower,"^\s+(?:gelegen|liggend\w*|geplaatst|staand\w*|dan)\b",
+GLOSS-0034,component,false,koppeling,coupling,coupling,Kupplung,Kupplung,Kupplung,giunto|giunti,
+GLOSS-0035,component,false,elektromotor,electric motor,electric motor,Elektromotor,Elektromotor,Elektromotor,motore elettrico|motori elettrici,
+GLOSS-0036,component,false,frequentieregelaar,variable frequency drive|frequency converter,variable speed drive|frequency converter,Frequenzumrichter,Frequenzumrichter,Frequenzumrichter,convertitore di frequenza|convertitori di frequenza|inverter,British usage: variable speed drive (VSD)
+GLOSS-0037,component,false,pakkingbus|pakkingbussen,stuffing box,stuffing box,Stopfbuchse,Stopfbuchse,Stopfbuchse,premistoppa,
+GLOSS-0038,component,false,slijtdeel|slijtdelen,wear part,wear part,Verschleißteil,Verschleißteil,Verschleissteil,parte soggetta a usura|parti soggette a usura|componente soggetto a usura,de-CH spelled without ß
+GLOSS-0039,service,false,onderhoud,maintenance,maintenance,Wartung|Instandhaltung,Wartung|Instandhaltung,Wartung|Unterhalt|Instandhaltung,manutenzione|manutenzioni,
+GLOSS-0040,service,false,revisie,overhaul,overhaul,Revision|Überholung|Generalüberholung,Revision|Überholung|Generalüberholung,Revision|Überholung|Generalüberholung,revisione|revisioni,Pump overhaul / refurbishment
+GLOSS-0041,service,false,reparatie,repair,repair,Reparatur,Reparatur,Reparatur,riparazione|riparazioni,
+GLOSS-0042,service,false,inbedrijfstelling,commissioning,commissioning,Inbetriebnahme,Inbetriebnahme,Inbetriebnahme|Inbetriebsetzung,messa in servizio|messa in funzione|avviamento,
+GLOSS-0043,service,false,storingsdienst,emergency service|breakdown service,breakdown service|emergency call-out service,Störungsdienst|Notdienst,Störungsdienst|Notdienst,Pikettdienst|Pannendienst|Notdienst,servizio di pronto intervento|pronto intervento|servizio di emergenza,de-CH: Pikettdienst is the usual term for on-call service
+GLOSS-0044,service,false,onderdeel|onderdelen,spare part,spare part,Ersatzteil,Ersatzteil,Ersatzteil,ricambi|ricambio|parte di ricambio|parti di ricambio,
+GLOSS-0045,service,false,advies|adviezen,advice,advice,Beratung,Beratung,Beratung,consulenza|consulenze,
+GLOSS-0046,service,false,montage,installation,installation,Montage,Montage,Montage,installazione|montaggio,
+GLOSS-0047,commercial,false,offerte,quotation|quote,quotation|quote,Angebot,Angebot,Offerte,preventivo|preventivi,Never 'offer' in English (false friend); de-CH Offerte; Italian preventivo
+GLOSS-0048,commercial,false,vrijblijvende offerte,non-binding quotation,non-binding quotation,unverbindliches Angebot,unverbindliches Angebot,unverbindliche Offerte,preventivo senza impegno|preventivo gratuito e senza impegno,
+GLOSS-0049,commercial,false,werkdag,working day,working day,Werktag,Werktag,Arbeitstag,giorno lavorativo|giorni lavorativi,de-CH Arbeitstage
+GLOSS-0050,commercial,false,levering,delivery,delivery,Lieferung,Lieferung,Lieferung,consegna|consegne,
+GLOSS-0051,commercial,false,levertijd,lead time|delivery time,lead time|delivery time,Lieferzeit,Lieferzeit,Lieferfrist|Lieferzeit,tempo di consegna|tempi di consegna,
+GLOSS-0052,commercial,false,garantie,warranty,warranty,Garantie|Gewährleistung,Garantie|Gewährleistung,Garantie|Gewährleistung,garanzia|garanzie,
+GLOSS-0053,commercial,false,btw,VAT (BTW)|VAT,VAT,MwSt.|Mehrwertsteuer|USt.,MwSt.|USt.|Mehrwertsteuer,MWST|MwSt.|Mehrwertsteuer,IVA,en-NL: 'VAT (BTW)' on first mention; de-CH abbreviation MWST
+GLOSS-0054,legal,false,algemene voorwaarden,general terms and conditions,general terms and conditions,Allgemeine Geschäftsbedingungen|AGB,Allgemeine Geschäftsbedingungen|AGB,Allgemeine Geschäftsbedingungen|AGB,condizioni generali|condizioni generali di vendita,Legal page: translation only
+GLOSS-0055,legal,false,privacyverklaring,privacy statement,privacy notice,Datenschutzerklärung,Datenschutzerklärung,Datenschutzerklärung,informativa sulla privacy|informativa privacy,Legal page: translation only
+GLOSS-0056,application,false,waterzuivering,water treatment,water treatment,Wasseraufbereitung|Wasserreinigung,Wasseraufbereitung|Wasserreinigung,Wasseraufbereitung|Wasserreinigung,trattamento delle acque|trattamento acque|depurazione delle acque,
+GLOSS-0057,application,false,afvalwater,wastewater,wastewater,Abwasser,Abwasser,Abwasser,acque reflue|acqua reflua,
+GLOSS-0058,application,false,proceswater,process water,process water,Prozesswasser,Prozesswasser,Prozesswasser,acqua di processo|acque di processo,
+GLOSS-0059,application,false,voedingsmiddelenindustrie,food industry,food industry,Lebensmittelindustrie,Lebensmittelindustrie,Lebensmittelindustrie,industria alimentare,
+GLOSS-0060,application,false,chemische industrie,chemical industry,chemical industry,chemische Industrie|Chemieindustrie,chemische Industrie|Chemieindustrie,chemische Industrie|Chemieindustrie,industria chimica,
+GLOSS-0061,application,false,brandbestrijding,fire-fighting|firefighting,fire-fighting|firefighting,Brandbekämpfung|Feuerlöschtechnik,Brandbekämpfung|Feuerlöschtechnik,Brandbekämpfung|Feuerlöschtechnik,antincendio|protezione antincendio,
+GLOSS-0062,application,false,drinkwater,drinking water,drinking water,Trinkwasser,Trinkwasser,Trinkwasser,acqua potabile,
+GLOSS-0063,application,false,koelwater,cooling water,cooling water,Kühlwasser,Kühlwasser,Kühlwasser,acqua di raffreddamento,
+GLOSS-0064,material,false,roestvast staal,stainless steel,stainless steel,Edelstahl|rostfreier Stahl,Edelstahl|rostfreier Stahl,Edelstahl|rostfreier Stahl,acciaio inossidabile|acciaio inox,
+GLOSS-0065,material,false,gietijzer,cast iron,cast iron,Gusseisen,Gusseisen,Gusseisen,ghisa,
+GLOSS-0066,material,false,corrosiebestendig,corrosion-resistant,corrosion-resistant,korrosionsbeständig,korrosionsbeständig,korrosionsbeständig,resistente alla corrosione,
+GLOSS-0067,material,false,slijtvast,wear-resistant,wear-resistant,verschleißfest,verschleißfest,verschleissfest,resistente all'usura,de-CH spelled without ß
+GLOSS-0068,compliance,false,CE-markering,CE marking,CE marking,CE-Kennzeichnung,CE-Kennzeichnung,CE-Kennzeichnung,marcatura CE,
+GLOSS-0080,brand,true,Flygt,Flygt,Flygt,Flygt,Flygt,Flygt,Flygt,Brand name: never translated or re-spelled
+GLOSS-0081,brand,true,Godwin,Godwin,Godwin,Godwin,Godwin,Godwin,Godwin,Brand name
+GLOSS-0082,brand,true,Xylem,Xylem,Xylem,Xylem,Xylem,Xylem,Xylem,Brand name
+GLOSS-0083,brand,true,Lowara,Lowara,Lowara,Lowara,Lowara,Lowara,Lowara,Brand name
+GLOSS-0084,brand,true,Grundfos,Grundfos,Grundfos,Grundfos,Grundfos,Grundfos,Grundfos,Brand name
+GLOSS-0085,brand,true,Ebara,Ebara,Ebara,Ebara,Ebara,Ebara,Ebara,Brand name
+GLOSS-0086,brand,true,SAER,SAER,SAER,SAER,SAER,SAER,SAER,Brand name
+GLOSS-0087,standard,true,ATEX,ATEX,ATEX,ATEX,ATEX,ATEX,ATEX,Explosion-protection directive; kept in every language
+GLOSS-0088,standard,true,ISO 9001,ISO 9001,ISO 9001,ISO 9001,ISO 9001,ISO 9001,ISO 9001,Quality-management standard
+GLOSS-0089,standard,true,VCA,VCA,VCA,VCA,VCA,VCA,VCA,Dutch safety certification scheme; kept as is
+GLOSS-0090,standard,true,TÜV,TÜV,TÜV,TÜV,TÜV,TÜV,TÜV,Trust signal: only where genuine
+GLOSS-0091,standard,true,VDMA,VDMA,VDMA,VDMA,VDMA,VDMA,VDMA,Trust signal: only where genuine
+GLOSS-0092,standard,true,SVGW,SVGW,SVGW,SVGW,SVGW,SVGW,SVGW,Swiss water/gas certification: only where genuine
+GLOSS-0093,standard,true,ÖVGW,ÖVGW,ÖVGW,ÖVGW,ÖVGW,ÖVGW,ÖVGW,Austrian water/gas certification: only where genuine
