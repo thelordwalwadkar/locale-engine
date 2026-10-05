@@ -35,6 +35,9 @@ Anything added **beyond the specification** (`docs/SPEC.md`) is listed here (spe
 | PA-18 | **Offline `mock` provider modes**: scripted fixtures, handlers, failures and latency; it also answers `providers test`. | Makes the whole suite runnable offline (spec Phase 2); also used to replay drafts (PA-19). |
 | PA-20 | **`tests/cli.e2e.test.ts`, `tests/edge.cases.test.ts`** | Evidence for rubric items R2, R5 and R6. |
 
+| PA-30 | **Web app** (`locale-web`): browser interface, SQLite database, accounts, per-user daily spending limits, job queue, results viewer, downloads, admin page, demo mode, Dockerfile. | Requested by the user. Inert unless started; see README and A-047. |
+| PA-31 | **GitHub Actions workflow** (`.github/workflows/ci.yml`): install, build, tests and an offline demo on Linux and Windows. | Repository hygiene; runs only on GitHub. |
+
 ## C. Not built (ideas)
 
 | # | Idea | Why not now |
@@ -48,3 +51,4 @@ Anything added **beyond the specification** (`docs/SPEC.md`) is listed here (spe
 | PA-27 | **Progress events and streaming** for long runs (SSE on REST, MCP progress notifications). | The run log has the data; no consumer asked for it yet. |
 | PA-28 | **Native-speaker review loop**: import corrected translations, learn glossary and rule candidates from the diffs. | The biggest remaining quality lever, and it needs people. |
 | PA-29 | **More locales** (fr-FR, fr-BE, nl-BE, es-ES, ...). | Adding one is a YAML file, one line in `LOCALES` and a glossary column (README, "Add a locale"). |
+| PA-32 | **Web app extras**: self-service password change, e-mail invitations, resumable jobs, per-user API keys, usage charts, PostgreSQL for several servers. | Not needed for a small trusted group. |

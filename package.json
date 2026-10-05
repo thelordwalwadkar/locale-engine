@@ -10,7 +10,8 @@
   "bin": {
     "locale": "dist/interfaces/cli.js",
     "locale-api": "dist/interfaces/api.js",
-    "locale-mcp": "dist/interfaces/mcp_server.js"
+    "locale-mcp": "dist/interfaces/mcp_server.js",
+    "locale-web": "dist/web/server.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
@@ -20,7 +21,8 @@
     "verify": "npm run typecheck && npm test",
     "locale": "tsx src/interfaces/cli.ts",
     "api": "tsx src/interfaces/api.ts",
-    "mcp": "tsx src/interfaces/mcp_server.ts"
+    "mcp": "tsx src/interfaces/mcp_server.ts",
+    "web": "tsx src/web/server.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.129.0",

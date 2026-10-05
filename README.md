@@ -4,7 +4,7 @@ Multi-locale content population engine for B2B web content: **ingest → detect 
 
 It takes a page (URL, `.html`, `.md`, `.txt`, `.docx`), Dutch or English, and produces one reviewed version per target market: **en-NL, en-GB, de-DE, de-AT, de-CH, it-IT** (nl-NL is built in and switched off by default). Translation, market localization and SEO adaptation are separate steps, every locale rule lives in a YAML file, deterministic linters run before and after the language model, and every finding says whether it is evidence or a hypothesis.
 
-Three entry points over one engine: a **CLI** (`locale`), a **REST API** (`locale-api`) and an **MCP server** (`locale-mcp`, stdio and streamable HTTP). Five provider adapters (Anthropic, OpenAI, Google, any OpenAI-compatible endpoint, Ollama) plus an offline `mock` provider.
+Four entry points over one engine: a **CLI** (`locale`), a **REST API** (`locale-api`), an **MCP server** (`locale-mcp`, stdio and streamable HTTP) and a **web app** (`locale-web`: browser interface, SQLite database, logins and spending limits). Five provider adapters (Anthropic, OpenAI, Google, any OpenAI-compatible endpoint, Ollama) plus an offline `mock` provider.
 
 > **Honest status.** The whole suite (1,770+ tests) runs offline and passes. The provider adapters are tested against fake SDK clients; **no live model call was made while building** (no API keys were available), so adapter behaviour against the real vendor APIs, and the linguistic quality of real model output, are not yet verified. Linguistic rules were written without native-speaker review (see `ASSUMPTIONS.md`, A-015).
 
@@ -119,6 +119,20 @@ Claude Desktop / any client that takes a JSON server list (use absolute paths; k
 Streamable HTTP client entry: `{ "mcpServers": { "locale-engine": { "type": "http", "url": "http://127.0.0.1:8788/mcp" } } }`. Claude Code: `claude mcp add locale-engine -- node C:/path/to/locale-engine/dist/interfaces/mcp_server.js` or `claude mcp add --transport http locale-engine http://127.0.0.1:8788/mcp`.
 
 Tool failures come back as `isError` with `{code, message}` in the text block. Each tool's input and output schema is generated from the Zod models (JSON Schema draft-07, which is what the MCP SDK advertises).
+
+## The web app (browser interface, database, logins)
+
+```bash
+npm run build
+LOCALE_WEB_DEMO=1 node dist/web/server.js      # try it without keys: placeholder text   (PowerShell: $env:LOCALE_WEB_DEMO=1; node dist/web/server.js)
+node dist/web/server.js                        # real run: needs the keys in .env
+```
+
+Open http://127.0.0.1:8080. The first start creates the administrator from `LOCALE_ADMIN_USER` / `LOCALE_ADMIN_PASSWORD` (or prints a random password once). Users paste a URL, paste text or upload an `.html/.md/.txt` file, pick languages, and watch the job; the result page shows the original beside every language with the flagged points, and offers a .zip, the Excel report and each page as HTML or Markdown. The administrator adds users, sets each user's **daily spending limit** and can disable or reset accounts.
+
+What it stores: one SQLite file (`data/locale.db`: users with scrypt password hashes, login sessions, jobs) and one folder per job (`data/jobs/<id>/`). Spend is capped per job (`LOCALE_WEB_JOB_CEILING_USD`, default 2) and per user per UTC day (default 10 USD, the administrator can change it per user); a queued or running job counts at its reserved ceiling. The browser app only accepts URLs and pasted text, never server file paths; the crawler's private-network guard stays on. Sessions are `HttpOnly`, `SameSite=Strict` cookies; cross-site POSTs are refused; five failed logins per user and address lock them out for 15 minutes.
+
+**Hosting it for other people.** GitHub stores the code; a host runs it. Any host that runs Node 24 or a Docker image works (Render, Railway, Fly.io, a VPS): use the included `Dockerfile`, set `LOCALE_ADMIN_PASSWORD`, `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` as the host's secret variables, and **mount a persistent disk at `/data`** (without one the database and results disappear on every restart). The host provides HTTPS; keep `LOCALE_WEB_SECURE=1`. Everyone who can sign in spends your API credits, within the limits above: create accounts only for people you trust, and keep the daily limits low. The Docker image was written but not built or run here (no Docker on the build machine).
 
 ## Configuration (everything is a file, nothing is hard-coded)
 
