@@ -19,7 +19,7 @@ COPY --from=build /app/config ./config
 COPY --from=build /app/prompts ./prompts
 COPY package.json ./
 # the database and every job's files live in /data: mount a persistent volume there
-VOLUME /data
+RUN mkdir -p /data
 EXPOSE 8080
-USER node
+# runs as root on purpose: a mounted disk (Render, Fly) is owned by root and the app must be able to write the database there
 CMD ["node", "dist/web/server.js"]
