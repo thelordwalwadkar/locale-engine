@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Locale Engine: translate, localize and check B2B web content</title>
+<meta name="description" content="Open-source engine that translates and localizes Dutch or English B2B pages into en-NL, en-GB, de-DE, de-AT, de-CH and it-IT, with rule checks, glossary and an audit trail.">
+<style>
+:root{--bg:#fbfbfa;--fg:#1c1c1a;--mute:#66665f;--line:#dcdcd6;--card:#fff;--accent:#0b5cad;--accent-fg:#fff;--chip:#eef0f3;--warn:#a96f00}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--fg:#ecece8;--mute:#9b9b94;--line:#34342f;--card:#1e1e1b;--accent:#6aa9ff;--accent-fg:#0b1a2b;--chip:#2a2a27;--warn:#e0b040}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:0 20px}
+header{padding:56px 0 24px}
+h1{font-size:2.1rem;line-height:1.2;margin:0 0 12px}
+h2{font-size:1.35rem;margin:44px 0 12px}
+p.lead{font-size:1.15rem;color:var(--mute);max-width:720px}
+.btns{display:flex;gap:12px;flex-wrap:wrap;margin:22px 0}
+a.btn{background:var(--accent);color:var(--accent-fg);padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600}
+a.btn.alt{background:var(--chip);color:var(--fg)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.card h3{margin:0 0 6px;font-size:1rem}.card p{margin:0;color:var(--mute);font-size:.93rem}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
+.tabs button{border:0;background:var(--chip);color:var(--fg);padding:5px 14px;border-radius:999px;font:inherit;cursor:pointer}
+.tabs button.on{background:var(--accent);color:var(--accent-fg)}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th,td{padding:10px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{font-size:.8rem;color:var(--mute)}
+td.src{background:var(--chip)}
+.note{display:block;font-size:.8rem;color:var(--warn);margin-top:4px}
+.small{font-size:.85rem;color:var(--mute)}
+ol li,ul li{margin:6px 0}
+code,pre{font-family:ui-monospace,Consolas,monospace;font-size:.88rem}
+pre{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow:auto}
+footer{padding:40px 0 60px;color:var(--mute);font-size:.85rem}
+.banner{background:var(--chip);border-left:4px solid var(--warn);border-radius:6px;padding:10px 14px;margin:14px 0;font-size:.92rem}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>Locale Engine</h1>
+  <p class="lead">Translate, localize and quality-check B2B web pages. Give it a Dutch or English page; get back one version per market: English for the Netherlands and the UK, German for Germany, Austria and Switzerland, and Italian.</p>
+  <div class="btns">
+    <a class="btn" href="https://github.com/thelordwalwadkar/locale-engine">Source code on GitHub</a>
+    <a class="btn alt" id="live" href="#try" hidden>Open the live demo</a>
+    <a class="btn alt" href="https://github.com/thelordwalwadkar/locale-engine#readme">Read the docs</a>
+  </div>
+</div></header>
+
+<main class="wrap">
+  <div class="banner"><b>Status.</b> The engine is complete and fully tested offline (1,780 tests). It has not yet been run against live AI services, and its language rules have not been reviewed by native speakers. Treat every output as a draft.</div>
+
+  <h2>What it does that a plain translation does not</h2>
+  <div class="grid">
+    <div class="card"><h3>Translation is not localization</h3><p>Translate first, then adapt to the market: Swiss "Offerte" and no "ß", British spelling, Austrian "Jänner", formal "Sie" and "Lei".</p></div>
+    <div class="card"><h3>Rule checks before and after the AI</h3><p>Numbers, units, brands, links and glossary terms must survive. A market claim like "delivery across the Netherlands" is neutralized and sent to a human.</p></div>
+    <div class="card"><h3>Every finding has a reason</h3><p>Each finding is tagged evidence or hypothesis, each change names the rule behind it, and the report ships as Excel, HTML, Markdown and JSON.</p></div>
+    <div class="card"><h3>Any AI provider</h3><p>Anthropic, OpenAI, Google, Ollama and any OpenAI-compatible service. Switch per stage with a setting, no code change.</p></div>
+    <div class="card"><h3>Browser app with limits</h3><p>Logins, a job queue, side-by-side results and a daily spending limit per user, so a team can share it safely.</p></div>
+    <div class="card"><h3>CLI, API and MCP</h3><p>The same engine as a command line, a REST API, and a tool for Claude Desktop.</p></div>
+  </div>
+
+  <h2>Sample result</h2>
+  <p class="small">Illustrative: short pump-page sentences, drafted by Claude and then adapted per market. Not reviewed by native speakers.</p>
+  <div class="tabs" id="tabs"></div>
+  <table><thead><tr><th>Dutch original</th><th id="lh">Version</th></tr></thead><tbody id="rows"></tbody></table>
+
+  <h2 id="try">Try it</h2>
+  <ol>
+    <li><b>In the browser:</b> use the live demo link above (ask the owner for a login).</li>
+    <li><b>On your computer, no keys needed:</b>
+<pre>git clone https://github.com/thelordwalwadkar/locale-engine.git
+cd locale-engine
+npm install &amp;&amp; npm run build
+LOCALE_WEB_DEMO=1 node dist/web/server.js     # Windows PowerShell: $env:LOCALE_WEB_DEMO=1; node dist/web/server.js</pre>
+      Open <code>http://127.0.0.1:8080</code>. Demo mode returns placeholder text; add API keys for real translations.</li>
+    <li><b>In a ready-made environment:</b> on the repository click Code, then Codespaces.</li>
+  </ol>
+
+  <h2>How a run works</h2>
+  <p>Read the page (respecting robots.txt) → split into typed segments → detect each segment's language → translate (neutral) → localize for the market → check with deterministic rules and an independent AI reviewer → repair what the rules flag → export. A run stops gracefully at its cost ceiling.</p>
+</main>
+<footer><div class="wrap">Open source project. <a href="https://github.com/thelordwalwadkar/locale-engine">github.com/thelordwalwadkar/locale-engine</a></div></footer>
+<script>
+// Set this to the address of your live demo to show the button, e.g. 'https://locale-engine-xxxx.onrender.com'
+var LIVE_DEMO_URL = '';
+if (LIVE_DEMO_URL) { var a = document.getElementById('live'); a.href = LIVE_DEMO_URL; a.hidden = false; }
+var SRC = ['Dompelpompen voor afvalwater','Onze pompen leveren een hoog rendement bij lage kosten en zijn geschikt voor continu bedrijf.','Levering binnen 5 werkdagen','Vraag een offerte aan','Eigen servicemonteurs voor onderhoud en storingsdienst'];
+var V = {
+ 'en-NL':{t:['Submersible pumps for wastewater','Our pumps deliver high efficiency at low cost and are suitable for continuous operation.','Delivery within 5 working days','Request a quote','Our own service engineers for maintenance and emergency service'],n:{3:'"Quote", never "offer": Dutch "offerte" is a false friend.'}},
+ 'en-GB':{t:['Submersible pumps for wastewater','Our pumps deliver high efficiency at low cost and are suitable for continuous duty.','Delivery within 5 working days','Request a quotation','In-house service engineers for maintenance and breakdown cover'],n:{4:'British usage: "breakdown service" for "storingsdienst".'}},
+ 'de-DE':{t:['Tauchpumpen für Abwasser','Unsere Pumpen bieten einen hohen Wirkungsgrad bei niedrigen Kosten und eignen sich für den Dauerbetrieb.','Lieferung innerhalb von 5 Werktagen','Angebot anfordern','Eigene Servicetechniker für Wartung und Störungsdienst'],n:{2:'In Germany a quotation is a "Angebot"; "Offerte" would read Swiss.'}},
+ 'de-AT':{t:['Tauchpumpen für Abwasser','Unsere Pumpen bieten einen hohen Wirkungsgrad bei niedrigen Kosten und eignen sich für den Dauerbetrieb.','Lieferung innerhalb von 5 Werktagen','Angebot anfordern','Eigene Servicetechniker für Wartung und Störungsdienst'],n:{2:'Austrian B2B also says "Angebot". Here the text can match de-DE; the engine still checks it separately.'}},
+ 'de-CH':{t:['Tauchpumpen für Abwasser','Unsere Pumpen bieten einen hohen Wirkungsgrad bei tiefen Kosten und eignen sich für den Dauerbetrieb.','Lieferung innert 5 Arbeitstagen','Offerte anfordern','Eigene Servicemonteure für Unterhalt und Pikettdienst'],n:{1:'Swiss: "tiefe" costs.',2:'Swiss: "innert" and "Arbeitstagen".',3:'Swiss: "Offerte" (the rule fails "Angebot").',4:'Swiss: "Unterhalt" and "Pikettdienst".'}},
+ 'it-IT':{t:['Pompe sommergibili per acque reflue','Le nostre pompe offrono un rendimento elevato a costi contenuti e sono adatte al funzionamento continuo.','Consegna entro 5 giorni lavorativi','Richieda un preventivo','Tecnici di assistenza interni per manutenzione e pronto intervento'],n:{3:'Formal "Lei" form ("Richieda"), not "Richiedi".'}}
+};
+var tabs = document.getElementById('tabs'), rows = document.getElementById('rows'), lh = document.getElementById('lh');
+function show(code) {
+  Array.prototype.forEach.call(tabs.children, function (b) { b.className = b.textContent === code ? 'on' : ''; });
+  lh.textContent = code; rows.textContent = '';
+  SRC.forEach(function (s, i) {
+    var tr = document.createElement('tr'), a = document.createElement('td'), b = document.createElement('td');
+    a.className = 'src'; a.textContent = s; b.textContent = V[code].t[i];
+    var n = V[code].n[i]; if (n) { var sp = document.createElement('span'); sp.className = 'note'; sp.textContent = n; b.appendChild(sp); }
+    tr.appendChild(a); tr.appendChild(b); rows.appendChild(tr);
+  });
+}
+Object.keys(V).forEach(function (code) { var b = document.createElement('button'); b.textContent = code; b.onclick = function () { show(code); }; tabs.appendChild(b); });
+show('de-CH');
+</script>
+</body>
+</html>
