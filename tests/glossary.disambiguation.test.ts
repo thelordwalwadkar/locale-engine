@@ -52,5 +52,8 @@ describe('the shipped glossary', () => {
     expect(hits('uit een lager gelegen put of bron')).not.toContain('GLOSS-0033');
     expect(hits('Solide as/lager-constructie voor zware belastingen')).toContain('GLOSS-0033');
     expect(hits('De lagers van de pomp')).toContain('GLOSS-0033');
+    expect(hits('Wanneer de druk in de pomp lager is dan de dampdruk')).not.toContain('GLOSS-0033'); // predicative adjective
+    expect(hits('Het lager is versleten')).toContain('GLOSS-0033');
+    expect(hits('de meest slijtende onderdelen zoals de waaier')).toContain('GLOSS-0044'); // a generic part is still matched, with generic part words accepted as translation
   });
 });

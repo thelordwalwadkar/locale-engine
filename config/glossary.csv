@@ -31,7 +31,7 @@ GLOSS-0029,component,false,waaier,impeller,impeller,Laufrad|Laufräder,Laufrad|L
 GLOSS-0030,component,false,pomphuis|pomphuizen,pump casing|pump housing,pump casing|pump housing,Pumpengehäuse,Pumpengehäuse,Pumpengehäuse,corpo pompa|corpi pompa,
 GLOSS-0031,component,false,pompas|pompassen,pump shaft,pump shaft,Pumpenwelle,Pumpenwelle,Pumpenwelle,albero pompa|alberi pompa|albero della pompa,
 GLOSS-0032,component,false,mechanische afdichting,mechanical seal,mechanical seal,Gleitringdichtung,Gleitringdichtung,Gleitringdichtung,tenuta meccanica|tenute meccaniche,
-GLOSS-0033,component,false,lager,bearing,bearing,Lager|Wälzlager,Lager|Wälzlager,Lager|Wälzlager,cuscinetto|cuscinetti,Noun only; Dutch adjective 'lager' means lower,"^\s+(?:gelegen|liggend\w*|geplaatst|staand\w*|dan)\b",
+GLOSS-0033,component,false,lager,bearing,bearing,Lager|Wälzlager,Lager|Wälzlager,Lager|Wälzlager,cuscinetto|cuscinetti,Noun only; Dutch adjective 'lager' means lower,"^\s+(?:gelegen|liggend\w*|geplaatst|staand\w*|dan|(?:is|zijn|blijft|blijven|ligt|liggen|wordt)\s+dan)\b",
 GLOSS-0034,component,false,koppeling,coupling,coupling,Kupplung,Kupplung,Kupplung,giunto|giunti,
 GLOSS-0035,component,false,elektromotor,electric motor,electric motor,Elektromotor,Elektromotor,Elektromotor,motore elettrico|motori elettrici,
 GLOSS-0036,component,false,frequentieregelaar,variable frequency drive|frequency converter,variable speed drive|frequency converter,Frequenzumrichter,Frequenzumrichter,Frequenzumrichter,convertitore di frequenza|convertitori di frequenza|inverter,British usage: variable speed drive (VSD)
@@ -42,7 +42,7 @@ GLOSS-0040,service,false,revisie,overhaul,overhaul,Revision|Überholung|General�
 GLOSS-0041,service,false,reparatie,repair,repair,Reparatur,Reparatur,Reparatur,riparazione|riparazioni,
 GLOSS-0042,service,false,inbedrijfstelling,commissioning,commissioning,Inbetriebnahme,Inbetriebnahme,Inbetriebnahme|Inbetriebsetzung,messa in servizio|messa in funzione|avviamento,
 GLOSS-0043,service,false,storingsdienst,emergency service|breakdown service,breakdown service|emergency call-out service,Störungsdienst|Notdienst,Störungsdienst|Notdienst,Pikettdienst|Pannendienst|Notdienst,servizio di pronto intervento|pronto intervento|servizio di emergenza,de-CH: Pikettdienst is the usual term for on-call service
-GLOSS-0044,service,false,onderdeel|onderdelen,spare part,spare part,Ersatzteil,Ersatzteil,Ersatzteil,ricambi|ricambio|parte di ricambio|parti di ricambio,
+GLOSS-0044,service,false,onderdeel|onderdelen,spare part|part|component,spare part|part|component,Ersatzteil|Bauteil|Teil,Ersatzteil|Bauteil|Teil,Ersatzteil|Bauteil|Teil,ricambi|ricambio|parte di ricambio|parti di ricambio|parti|parte|componente|componenti,
 GLOSS-0045,service,false,advies|adviezen,advice,advice,Beratung,Beratung,Beratung,consulenza|consulenze,
 GLOSS-0046,service,false,montage,installation,installation,Montage,Montage,Montage,installazione|montaggio,
 GLOSS-0047,commercial,false,offerte,quotation|quote,quotation|quote,Angebot,Angebot,Offerte,preventivo|preventivi,Never 'offer' in English (false friend); de-CH Offerte; Italian preventivo
