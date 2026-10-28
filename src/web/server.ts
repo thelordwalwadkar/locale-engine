@@ -104,6 +104,20 @@ export function ensureAdmin(store: Store, env: NodeJS.ProcessEnv = process.env):
   return { username, password, generated: !(given && given.length >= 10) };
 }
 
+/** Creates the demo account named by LOCALE_GUEST_USER / LOCALE_GUEST_PASSWORD when it does not exist yet (a low daily limit, never an administrator). */
+export function ensureGuest(store: Store, env: NodeJS.ProcessEnv = process.env): boolean {
+  const username = env['LOCALE_GUEST_USER']?.trim();
+  const password = env['LOCALE_GUEST_PASSWORD'];
+  if (!username || !password || password.length < 10) return false;
+  try {
+    store.createUser({ username, password, role: 'user', daily_limit_usd: Number(env['LOCALE_GUEST_DAILY_LIMIT_USD'] ?? 2) });
+    return true;
+  } catch (e) {
+    if (/UNIQUE/i.test(String(e))) return false;
+    throw e;
+  }
+}
+
 export function buildWeb(opts: WebOptions): { app: FastifyInstance; runner: JobRunner } {
   const { store } = opts;
   const publicDir = opts.publicDir ?? path.join(projectRoot(), 'src', 'web', 'public');
@@ -347,6 +361,7 @@ export async function startWeb(opts: { engine?: () => Promise<Engine>; demo?: bo
   mkdirSync(dataDir, { recursive: true });
   const store = new Store(path.join(dataDir, 'locale.db'));
   const admin = ensureAdmin(store, env);
+  ensureGuest(store, env);
   const host = opts.host ?? env['LOCALE_WEB_HOST'] ?? (env['PORT'] ? '0.0.0.0' : '127.0.0.1');
   const port = opts.port ?? parsePort(env['LOCALE_WEB_PORT'] ?? env['PORT'] ?? '8080', 'LOCALE_WEB_PORT');
   const allowedHosts = allowedHostnamesFor(host, env);

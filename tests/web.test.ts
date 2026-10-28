@@ -12,7 +12,7 @@ import { ProvidersConfigSchema } from '../src/schemas/index.js';
 import { EngineError } from '../src/util/errors.js';
 import { Store, checkPassword, hashPassword } from '../src/web/db.js';
 import { JobRunner } from '../src/web/jobs.js';
-import { buildWeb, ensureAdmin } from '../src/web/server.js';
+import { buildWeb, ensureAdmin, ensureGuest } from '../src/web/server.js';
 import { zipStored } from '../src/web/zip.js';
 
 const config = loadConfig();
@@ -72,6 +72,16 @@ describe('passwords and the database', () => {
     expect(gen?.generated).toBe(true);
     expect(gen?.password.length).toBeGreaterThanOrEqual(12);
     expect(other.store.authenticate('admin', gen?.password ?? '')?.role).toBe('admin');
+  });
+
+  it('creates the guest account from the environment once, as a limited non-administrator', () => {
+    const { store } = setup();
+    expect(ensureGuest(store, {})).toBe(false);
+    expect(ensureGuest(store, { LOCALE_GUEST_USER: 'guest', LOCALE_GUEST_PASSWORD: 'short' })).toBe(false);
+    const env = { LOCALE_GUEST_USER: 'guest', LOCALE_GUEST_PASSWORD: 'guest-password-1', LOCALE_GUEST_DAILY_LIMIT_USD: '1' };
+    expect(ensureGuest(store, env)).toBe(true);
+    expect(ensureGuest(store, env)).toBe(false);
+    expect(store.authenticate('guest', 'guest-password-1')).toMatchObject({ role: 'user', daily_limit_usd: 1 });
   });
 
   it('marks jobs that were queued or running when the server stopped as failed', () => {
